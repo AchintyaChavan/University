@@ -29,7 +29,7 @@ def record(filename):
             
         for line in sys.stdin:
                 
-            f.write(line)
+#             f.write(line)
                
 
 
