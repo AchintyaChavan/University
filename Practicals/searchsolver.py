@@ -6,7 +6,6 @@ Created on 9 Aug. 2017
 
 from tree import Node
 from puzzle import Puzzle
-import pdb
 
 def add_adjacentNodes(node):
     
@@ -14,12 +13,12 @@ def add_adjacentNodes(node):
         
     n = Puzzle(node.current)
     
-    updatedNodes.append(Node(n.up(), node.current, "u", node.vertex + 1))
-    updatedNodes.append(Node(n.down(), node.current, "d", node.vertex + 1))
-    updatedNodes.append(Node(n.left(), node.current, "l", node.vertex + 1))
-    updatedNodes.append(Node(n.right(), node.current, "r", node.vertex + 1))
+    updatedNodes.append(Node(n.up(), node, "U", node.vertex + 1))
+    updatedNodes.append(Node(n.down(), node, "D", node.vertex + 1))
+    updatedNodes.append(Node(n.left(), node, "L", node.vertex + 1))
+    updatedNodes.append(Node(n.right(), node, "R", node.vertex + 1))
     
-    updatedNodes = [child for child in updatedNodes if child.current != None]
+    updatedNodes = [adjacent for adjacent in updatedNodes if adjacent.current != None]
                 
     return updatedNodes
         
@@ -35,33 +34,24 @@ def breadth_first_search(initial, final):
         
     while len(nodes) > 0:
 
-        v = nodes.pop(0) #Dequeue the first node from the list 
+        v = nodes.pop(0) #Dequeue the first node from the list    
         
-#         
-        
-        if v.current == final:
-            
-            print(v.current)
-            
+        if v.current == final:           
+   
             while v.vertex != 0:
-                 
-                 moves.insert(0, v.move)                 
-                 v = v.parent    
+                
+                moves.insert(0, v.move)
+                v = v.parent            
             
-            return moves;
+            return moves, len(nodes);
             
 #         nodes.extend(add_childNodes(v, nodes))
         
         adjacent = add_adjacentNodes(v)
-        
-#         pdb.set_trace()
+           
         for node in adjacent:            
                         
             if tuple(node.current) not in explored:
                 
                 explored.add(tuple(node.current))
                 nodes.append(node)
-                
-#                 print(nodes[0].current)
-                            
-                    
