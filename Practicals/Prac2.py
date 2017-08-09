@@ -9,8 +9,10 @@ python "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702
 
 import argparse
 import sys
+import time
 
 from puzzle import Puzzle
+import searchsolver
 
 initial = "1348627_5"
 final = "1238_4765"
@@ -34,10 +36,13 @@ def main():
 #     elif args.action == "dfs":
 #         sequence8(args.state1, args.state2)
 
-    a = Puzzle(initial)
-    print(a.puzzle,'\n', a.up())
-    
-        
+#     a = Puzzle(initial)
+#     print([a.puzzle],'\n', a.up())
+    t1 = time.time()
+    moves = searchsolver.breadth_first_search(list(initial), list(final))
+    t2 = time.time()
+    print(moves, t2 - t1)
+       
     return 0;
 
 if __name__ == "__main__":
