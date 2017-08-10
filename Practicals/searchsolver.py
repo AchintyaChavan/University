@@ -40,7 +40,7 @@ def breadth_first_search(initial, final):
    
             while v.vertex != 0:
                 
-                moves.insert(0, v.move)
+                moves = list(v.move) + moves
                 v = v.parent            
             
             return moves, len(nodes);
