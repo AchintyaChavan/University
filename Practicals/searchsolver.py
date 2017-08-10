@@ -7,6 +7,23 @@ Created on 9 Aug. 2017
 from tree import Node
 from puzzle import Puzzle
 
+def parity_check(state):
+    
+    parity = 0;
+    
+    temp = state[:]
+    temp.remove('_')
+    
+    for i in range(len(temp)):  
+                      
+        for j in range(i):
+            
+            if int(temp[j]) > int(temp[i]):
+                                
+                parity = parity + 1                                
+    
+    return (parity % 2)
+
 def add_adjacentNodes(node):
     
     updatedNodes = [];   
@@ -27,6 +44,7 @@ def breadth_first_search(initial, final):
     
     nodes = []
     moves = []
+    sequence = []
     explored = set()    
     
     nodes.append(Node(initial, None, None, 0)) #no parent node and vertex = 0
@@ -41,9 +59,10 @@ def breadth_first_search(initial, final):
             while v.vertex != 0:
                 
                 moves = list(v.move) + moves
+                sequence.append(v.current)
                 v = v.parent            
             
-            return moves, len(nodes);
+            return moves, sequence;
             
 #         nodes.extend(add_childNodes(v, nodes))
         
@@ -54,4 +73,6 @@ def breadth_first_search(initial, final):
             if tuple(node.current) not in explored:
                 
                 explored.add(tuple(node.current))
-                nodes.append(node)
+                nodes.append(node)                
+    
+    return None, None #will output NULL if no solution is found
