@@ -10,8 +10,6 @@ python "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702
 import argparse
 import sys
 import time
-
-from puzzle import Puzzle
 import searchsolver as ss
 
 initial = "1348627_5"
@@ -41,13 +39,14 @@ def main():
 
         t1 = time.time()
         
-        moves, sequence = ss.breadth_first_search(list(initial), list(final))
-         
+#         moves, sequence = ss.breadth_first_search(list(initial), list(final))
+        moves, sequence = ss.depth_first_search(list(initial), 
+                                                list(final), treeDepth = 5)
 #         if args.solver == 'bfs':            
 #             moves, sequence = ss.breadth_first_search(list(args.state1), list(args.state2))
 #         
 #         elif args.action == "dfs":
-#             moves, sequence = ss.depth_first_search(list(args.state1), list(args.state2))
+#             moves, sequence = ss.depth_first_search(list(initial), list(final), treeDepth = 20)
     
         t2 = time.time()
   
