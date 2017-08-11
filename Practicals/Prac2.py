@@ -12,7 +12,7 @@ import sys
 import time
 import searchsolver as ss
 
-initial = "1348627_5"
+initial = "281_43765"
 final   = "1238_4765"
 
 def main():
@@ -41,7 +41,7 @@ def main():
         
 #         moves, sequence = ss.breadth_first_search(list(initial), list(final))
         moves, sequence = ss.depth_first_search(list(initial), 
-                                                list(final), treeDepth = 5)
+                                                list(final), treeDepth = 50)
 #         if args.solver == 'bfs':            
 #             moves, sequence = ss.breadth_first_search(list(args.state1), list(args.state2))
 #         
