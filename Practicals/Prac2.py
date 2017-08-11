@@ -14,8 +14,8 @@ import time
 from puzzle import Puzzle
 import searchsolver as ss
 
-initial = "14236578_"
-final   = "12345687_"
+initial = "1348627_5"
+final   = "1238_4765"
 
 def main():
        
@@ -56,7 +56,7 @@ def main():
         sys.stdout.write('\n ' +  '   ' + str(list(initial)))
          
         for i in range(len(sequence)): 
-             
+              
             sys.stdout.write('\n' + str(moves[i]) + '-> ' + str(sequence[i]))
  
         sys.stdout.write('\n' 'Time taken (s): ' + str(t2 - t1) + '\n')
