@@ -6,6 +6,7 @@ Created on 13 Aug. 2017
 @course:  COMP3702
 
 '''
+from PIL.ImageGrab import grab
 
 queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query-simple.txt"
 environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test-simple.txt"
@@ -28,17 +29,22 @@ def file_read(filename):
 
 def environment_read(array):
     
-    roads = []
+    graph = []
     
     for r in array:
         
         temp = r.split(";")        
         
-        roads.append(road.Environment(temp[0].strip(), temp[1].strip(), 
-                                      temp[2].strip(), temp[3].strip(), 
-                                      temp[4].strip()))    
+        length = int(temp[3].strip())
+        nLots = int(temp[4].strip())
         
-    return roads
+        for i in range(nLots):       
+        
+            graph.append(road.Node(temp[0].strip(), i + 1, 
+                                   temp[1].strip(), temp[2].strip(), 
+                                   length, nLots))
+        
+    return graph
 
 def queries_read(array):
     
@@ -64,11 +70,18 @@ def main():
     f1 = file_read(environmentFile)
     f2 = file_read(queryFile)
     
-    roads = environment_read(f1)
+    graph = environment_read(f1)
     queries = queries_read(f2)
-    
-    print(repr(roads[0]))
-    print(repr(queries[0]))
+
+#     for q in queries:        
+#         for n in graph:
+#             
+#             n.update(q.name1, q.address1, 's')
+#             n.update(q.name2, q.address2, 'e')
+
+    for node in graph: print(repr(node))
+    for q in queries: print(repr(q))
+
     return 0;
 
 if __name__ == "__main__":
