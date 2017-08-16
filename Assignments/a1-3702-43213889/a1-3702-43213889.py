@@ -6,8 +6,6 @@ Created on 13 Aug. 2017
 @course:  COMP3702
 
 '''
-from PIL.ImageGrab import grab
-
 queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query-simple.txt"
 environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test-simple.txt"
 outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\output-simple.txt"
@@ -15,6 +13,7 @@ outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\CO
 import argparse
 import pdb
 
+import re
 import road
 
 def file_read(filename):
@@ -54,8 +53,11 @@ def queries_read(array):
         
         temp = q.split(";")
         
-        queries.append(road.Query(temp[0][1:-1], temp[0][0], 
-                                  temp[1][2:], temp[1][1]))
+        start = re.split('(\d+)', temp[0])
+        end = re.split('(\d+)', temp[1])
+        
+        queries.append(road.Query(start[2].strip(), int(start[1]), 
+                                  end[2].strip(), int(end[1])))
         
     return queries       
        
