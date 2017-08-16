@@ -15,6 +15,7 @@ import pdb
 
 import re
 import road
+import search
 
 def file_read(filename):
     
@@ -28,7 +29,7 @@ def file_read(filename):
 
 def environment_read(array):
     
-    graph = []
+    graph = {}
     
     for r in array:
         
@@ -39,9 +40,9 @@ def environment_read(array):
         
         for i in range(nLots):       
         
-            graph.append(road.Node(temp[0].strip(), i + 1, 
+            graph[str(i+1) + temp[0].strip()] = road.Node(i + 1, 
                                    temp[1].strip(), temp[2].strip(), 
-                                   length, nLots))
+                                   length, nLots)
         
     return graph
 
@@ -53,11 +54,7 @@ def queries_read(array):
         
         temp = q.split(";")
         
-        start = re.split('(\d+)', temp[0])
-        end = re.split('(\d+)', temp[1])
-        
-        queries.append(road.Query(start[2].strip(), int(start[1]), 
-                                  end[2].strip(), int(end[1])))
+        queries.append([temp[0].strip(), temp[1].strip()])
         
     return queries       
        
@@ -74,15 +71,15 @@ def main():
     
     graph = environment_read(f1)
     queries = queries_read(f2)
+    
+    
+    
+    for q in queries:
+        cost, path = search.breadth_first_search(graph, q[0], q[1])
+         
+        print(cost, path)
 
-#     for q in queries:        
-#         for n in graph:
-#             
-#             n.update(q.name1, q.address1, 's')
-#             n.update(q.name2, q.address2, 'e')
-
-    for node in graph: print(repr(node))
-    for q in queries: print(repr(q))
+    print(graph)
 
     return 0;
 

@@ -18,33 +18,26 @@ class Query:
     def __repr__(self):
         
         return "%s, %s, %s, %s\n" % (self.name1, self.address1,
-                                     self.name2, self.address2)
-        
+                                     self.name2, self.address2)        
 
 
 class Node:
     
-    def __init__(self, road, addrNo, j1, j2, length, nLots):
+    def __init__(self, addrNo, j1, j2, length, nLots, previous =  None):
         
-        self.name = road
-        self.addrNo = addrNo
         self.j1 = j1
         self.j2 = j2
         self.roadLength = length
         self.plotNum = nLots
-        self.cost1 = 2*self.roadLength/self.plotNum*math.ceil(self.addrNo/2.)-1
+        self.cost1 = 2*self.roadLength/self.plotNum*math.ceil(addrNo/2.)-1
         self.cost2 = self.roadLength - self.cost1
-        self.start = 0
-        self.end = 0      
+        self.trace = previous    
     
     def __repr__(self):
         
-        return "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s \n" % (
-                                         self.name, self.addrNo, 
-                                         self.j1, self.j2, 
+        return "%s, %s, %s, %s, %s, %s\n" % (self.j1, self.j2, 
                                          self.roadLength, self.plotNum, 
-                                         self.cost1, self.cost2,
-                                         self.start, self.end)
+                                         self.cost1, self.cost2)
         
     def update(self, name, addrNo, type):
         
