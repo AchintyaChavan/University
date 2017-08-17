@@ -11,11 +11,9 @@ def address_length(length, plotSize, addrNo):
     
     return 2 * Length/plotSize * math.ceil(addrNo / 2.) - 1
 
-def adjacent(graph, current):
-    
-    
-    
-    return
+def add_nodes(current):
+       
+    return list([c[2] for c in current])
 
 
 def breadth_first_search(graph, query):
@@ -28,16 +26,40 @@ def breadth_first_search(graph, query):
     goal = query.name2
     a2 = query.address2
 
-    for key, val in graph.iteritems():
-        
-        for v in val:
-                    
-            if v[0] == start:
+    # Add starting address to the front of queue
+    for key, val in graph.iteritems():    
             
-                priorityQueue[v[1]] = val
-        
-        
+        for v in val:     
+                           
+            if v[0] == start:
+                
+                node = v[1]            
+                priorityQueue[node] = val     
+            
+    while bool(priorityQueue) != False:
     
-    print(priorityQueue)
+#         print(priorityQueue)
+    
+        current = priorityQueue.pop(node)
+        
+        print(node)
+        
+        for c in current:
+            
+            if c[0] == goal:
+                
+                print(c[0])
+                return cost, priorityQueue
+                
+        
+        adjacent = add_nodes(current)
+  
+        for n in adjacent:
+            
+            if n not in priorityQueue:
+                
+                priorityQueue[n] = graph[n]
+                node = n
+    
     
     return cost, priorityQueue
