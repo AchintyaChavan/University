@@ -52,28 +52,23 @@ def junction_read(array):
         end = temp[2].strip()        
         length = int(temp[3].strip())
         nLots = int(temp[4].strip())
-        
-        if start not in junction:
                 
-            junction[start] = [[road, start, end, length, nLots]]
+        if start not in junction:
+
+            junction[start] = {end: [road, start, end, length, nLots]}
             
         else:
-            
-            junction[start].append([road, start, end, length, nLots])
+
+            junction[start][end] = [road, start, end, length, nLots]
             
         if end not in junction:
             
-            junction[end] = [[road, start, end, length, nLots]]
+            junction[end] = {start: [road, start, end, length, nLots]}
             
         else:
             
-            junction[end].append([road, start, end, length, nLots])      
-        
-#         for i in range(nLots):       
-#         
-#             graph[str(i+1) + temp[0].strip()] = road.Node(i + 1, 
-#                                    temp[1].strip(), temp[2].strip(), 
-#                                    length, nLots)
+            junction[end][start] = [road, start, end, length, nLots]
+
     return junction
 
 def queries_read(array):
@@ -114,6 +109,7 @@ def main():
     queries = queries_read(f2)
     
 #     for j, i in junction.iteritems(): print(j,i)
+
     
 #     for q in queries:
 #         cost, path = search.breadth_first_search(junction, q)
@@ -121,7 +117,7 @@ def main():
 #           
 #         print(cost, path)
 
-    cost, path = search.breadth_first_search(junction, queries[0])
+    cost, path = search.breadth_first_search(junction, queries[2])
 
     return 0;
 
