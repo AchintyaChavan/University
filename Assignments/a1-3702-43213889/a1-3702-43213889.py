@@ -114,8 +114,6 @@ def main():
     queries = queries_read(f2)
     
 #     for j, i in junction.iteritems(): print(j,i)
-#     
-#     print(queries)
     
 #     for q in queries:
 #         cost, path = search.breadth_first_search(junction, q)
