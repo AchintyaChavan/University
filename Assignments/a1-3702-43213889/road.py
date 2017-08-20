@@ -50,3 +50,10 @@ class Node:
             elif type == 'e':
                 
                 self.end
+                
+class Sequence:
+    
+    def __init__(self, current, parent):
+        
+        self.state = current
+        self.parent = parent

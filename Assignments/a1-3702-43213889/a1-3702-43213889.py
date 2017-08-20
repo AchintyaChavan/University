@@ -117,7 +117,7 @@ def main():
 #           
 #         print(cost, path)
 
-    cost, path = search.breadth_first_search(junction, queries[2])
+    cost, path = search.breadth_first_search(junction, queries[0])
 
     return 0;
 

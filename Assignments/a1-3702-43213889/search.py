@@ -5,7 +5,9 @@ Created on 16 Aug. 2017
 '''
 
 import math
+import pdb
 import road
+import Queue as Q
 
 def address_length(length, plotSize, addrNo):
     
@@ -39,8 +41,10 @@ def adjacent_nodes(node):
 def breadth_first_search(graph, query):
     
     i = 0
-    currentCost = {}
-    priorityQueue = {}
+    
+    currentCost = {}    
+    path = []
+    frontier = Q.PriorityQueue()    
     explored = set()
 
     start = query.name1
@@ -48,14 +52,17 @@ def breadth_first_search(graph, query):
     goal = query.name2
     a2 = query.address2
 
+    # Initialise search to the starting node
     name, node = starting_node(graph, start)
-    priorityQueue[name] = graph[name]
+    frontier.put((0, name, graph[name]))
     currentCost[name] = address_length(node[3], node[4], a1)
-    explored.add(tuple(name))
+    seq = road.Sequence(name, None)
     
-#     print(priorityQueue)
+#     explored.add(tuple(name))
     
-#     print(name, node, priorityQueue)
+#     print(q)
+    
+#     print(name, node, q)
 
     # Add starting address to the front of queue
 #     for key, val in graph.iteritems(): 
@@ -65,7 +72,7 @@ def breadth_first_search(graph, query):
 #             if v[0] == start:
 #                 
 #                 node = v[1]            
-#                 priorityQueue[node] = val
+#                 q[node] = val
 #                 currentCost[node] = address_length(int(v[3]), int(v[4]), a1)
 #                 explored.add(tuple(node))
 # #                 print(key, v, v[3], v[4], a1, v[0], cost)
@@ -73,34 +80,46 @@ def breadth_first_search(graph, query):
 
 
           
-    while bool(priorityQueue) != False:
+    while bool(frontier) != False:
        
-        node = priorityQueue.pop(name)
-         
-        print(node)
+        item = frontier.get()
+        name = item[1]
+        current = item[2]
+        
+        
+#         pdb.set_trace()
+#         print(name, i, current)
 
-        for key in node.keys():
-            
-            if node[key][0] == goal:
+        for key in current.keys():
+                        
+            if current[key][0] == goal and key in currentCost:
+                                
+#                 print(key, seq, currentCost)
+                while seq != None:
+                    
+                    
+                    path.insert(0, seq.state)
+
+                    seq = seq.parent
                 
-                print(node[key][0], currentCost)               
-                return currentCost, priorityQueue
+#                 print(currentCost)
+                return currentCost, list(set(path))
             
             
-        for next in node.keys():
+        for next in current.keys():      
+                       
+            estimatedCost = currentCost[name] + current[next][3]         
             
-            estimatedCost = currentCost[name] + node[next][3]
-            
-            if tuple(next) not in explored or estimatedCost < currentCost[next]:
+            if next not in currentCost or estimatedCost < currentCost[next]:
+                 
+                currentCost[next] = estimatedCost                
+                priority = estimatedCost                
+                 
                 
-                currentCost[next] = estimatedCost
-                
-#                 print(estimatedCost)
-                
-                explored.add(tuple(next))
-                
-                priorityQueue[next] = graph[next]
-                name = next
+                 
+                frontier.put((priority, next, graph[next]))
+                seq = road.Sequence(name, seq)
+#                 name = next
             
 
                 
@@ -111,7 +130,7 @@ def breadth_first_search(graph, query):
 #               
 #             print(node[0], currentCost)
 #               
-#             return currentCost, priorityQueue
+#             return currentCost, q
 #           
 #         next = adjacent_nodes(graph, name)
 #          
@@ -122,7 +141,7 @@ def breadth_first_search(graph, query):
 #                 print(n, name)
 #                   
 #                 explored.add(tuple(n))
-#                 priorityQueue[n] = graph[n][name]
+#                 q[n] = graph[n][name]
 #                 name = n
                  
          
@@ -132,7 +151,7 @@ def breadth_first_search(graph, query):
 #             if c[0] == goal:
 #                  
 # #                 print(c[0], cost)
-#                 return currentCost, priorityQueue
+#                 return currentCost, q
 #                  
 #          
 #         adjacent = add_nodes(node)
@@ -146,10 +165,10 @@ def breadth_first_search(graph, query):
 #             if tuple(n) not in explored:             
 #                                  
 #                 explored.add(tuple(n))
-#                 priorityQueue[n] = graph[n]
+#                 q[n] = graph[n]
 #                 node = n
    
 #                 print(n, graph[n])
         i += 1      
     
-    return currentCost, priorityQueue
+    return currentCost, q
