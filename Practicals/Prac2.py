@@ -39,9 +39,9 @@ def main():
 
         t1 = time.time()
         
-#         moves, sequence = ss.breadth_first_search(list(initial), list(final))
-        moves, sequence = ss.depth_first_search(list(initial), 
-                                                list(final), treeDepth = 50)
+        moves, sequence = ss.breadth_first_search(list(initial), list(final))
+#         moves, sequence = ss.depth_first_search(list(initial), 
+#                                                 list(final), treeDepth = 50)
 #         if args.solver == 'bfs':            
 #             moves, sequence = ss.breadth_first_search(list(args.state1), list(args.state2))
 #         

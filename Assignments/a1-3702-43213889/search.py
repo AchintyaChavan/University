@@ -10,8 +10,8 @@ import road
 import Queue as Q
 
 def address_length(length, plotSize, addrNo):
-    
-    return 2 * length/plotSize * math.ceil(addrNo / 2.) - 1
+        
+    return round(2 * length/(1.*plotSize) * math.ceil(addrNo / 2.) - 1., 3)
 
 def starting_node(graph, start):
     
@@ -21,10 +21,11 @@ def starting_node(graph, start):
               
             if graph[key][subKey][0] == start:
                   
-                name = graph[key][subKey][1]
+                a1 = graph[key][subKey][1]
+                a2 = graph[key][subKey][2]
                 node = graph[key][subKey]  
                               
-                return name, node            
+                return a1, a2, node            
      
     return None, None
             
@@ -38,14 +39,14 @@ def adjacent_nodes(node):
     
     return k   
            
-def breadth_first_search(graph, query):
+def uniform_cost_search(graph, query):
     
     i = 0
     
-    currentCost = {}    
+    currentCost = {} 
+    seq = {}
     path = []
     frontier = Q.PriorityQueue()    
-    explored = set()
 
     start = query.name1
     a1 = query.address1
@@ -53,16 +54,16 @@ def breadth_first_search(graph, query):
     a2 = query.address2
 
     # Initialise search to the starting node
-    name, node = starting_node(graph, start)
-    frontier.put((0, name, graph[name]))
-    currentCost[name] = address_length(node[3], node[4], a1)
-    seq = road.Sequence(name, None)
+    j1, j2, node = starting_node(graph, start)
+    frontier.put((0, j1, graph[j1]))
+    frontier.put((0, j2, graph[j2]))
+    currentCost[j1] = address_length(node[3], node[4], a1)
+    currentCost[j2] = node[3] - address_length(node[3], node[4], a1)
     
-#     explored.add(tuple(name))
+    seq[j1] = road.Sequence(j1, None)
+    seq[j2] = road.Sequence(j2, None)
     
-#     print(q)
-    
-#     print(name, node, q)
+#     print(j1, j2, currentCost)
 
     # Add starting address to the front of queue
 #     for key, val in graph.iteritems(): 
@@ -85,25 +86,32 @@ def breadth_first_search(graph, query):
         item = frontier.get()
         name = item[1]
         current = item[2]
-        
-        
-#         pdb.set_trace()
-#         print(name, i, current)
 
         for key in current.keys():
                         
             if current[key][0] == goal and key in currentCost:
-                                
-#                 print(key, seq, currentCost)
-                while seq != None:
-                    
-                    
-                    path.insert(0, seq.state)
 
-                    seq = seq.parent
+                path.insert(0, goal)
+                path.insert(0, key)
                 
-#                 print(currentCost)
-                return currentCost, list(set(path))
+                if key == current[key][1]:
+                
+                    cost = address_length(current[key][3], current[key][4], a2)
+                    
+                else:
+                    
+                    cost = current[key][3] - address_length(current[key][3], 
+                                                            current[key][4], a2)
+                
+                cost += currentCost[key]               
+
+                while seq[key].parent != None:
+                    
+#                     print(graph[seq[key].state][seq[key].parent.state])                  
+                    path.insert(0, seq[key].state)
+                    seq[key] = seq[key].parent
+                
+                return cost, list(set(path))
             
             
         for next in current.keys():      
@@ -113,12 +121,11 @@ def breadth_first_search(graph, query):
             if next not in currentCost or estimatedCost < currentCost[next]:
                  
                 currentCost[next] = estimatedCost                
-                priority = estimatedCost                
-                 
-                
+                priority = estimatedCost                          
                  
                 frontier.put((priority, next, graph[next]))
-                seq = road.Sequence(name, seq)
+                seq[next] = road.Sequence(name, seq[name])
+
 #                 name = next
             
 
