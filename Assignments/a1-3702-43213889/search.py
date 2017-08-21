@@ -5,7 +5,6 @@ Created on 16 Aug. 2017
 '''
 
 import math
-import pdb
 import road
 import Queue as Q
 
@@ -28,17 +27,7 @@ def starting_node(graph, start):
                 return a1, a2, node            
      
     return None, None
-            
-def adjacent_nodes(node):
-    
-    k = []
-       
-    for key in node.keys():
-        
-        k.append(key)      
-    
-    return k   
-           
+
 def uniform_cost_search(graph, query):
     
     i = 0
@@ -60,27 +49,11 @@ def uniform_cost_search(graph, query):
     currentCost[j1] = address_length(node[3], node[4], a1)
     currentCost[j2] = node[3] - address_length(node[3], node[4], a1)
     
-    seq[j1] = road.Sequence(j1, None)
-    seq[j2] = road.Sequence(j2, None)
+    seq[j1] = road.Sequence(j1, graph[j1][j2][0], None)
+    seq[j2] = road.Sequence(j2, graph[j1][j2][0], None)
     
-#     print(j1, j2, currentCost)
+    path.insert(0, goal)
 
-    # Add starting address to the front of queue
-#     for key, val in graph.iteritems(): 
-#             
-#         for v in val:    
-#                            
-#             if v[0] == start:
-#                 
-#                 node = v[1]            
-#                 q[node] = val
-#                 currentCost[node] = address_length(int(v[3]), int(v[4]), a1)
-#                 explored.add(tuple(node))
-# #                 print(key, v, v[3], v[4], a1, v[0], cost)
-# #                 break
-
-
-          
     while bool(frontier) != False:
        
         item = frontier.get()
@@ -91,7 +64,6 @@ def uniform_cost_search(graph, query):
                         
             if current[key][0] == goal and key in currentCost:
 
-                path.insert(0, goal)
                 path.insert(0, key)
                 
                 if key == current[key][1]:
@@ -107,12 +79,13 @@ def uniform_cost_search(graph, query):
 
                 while seq[key].parent != None:
                     
-#                     print(graph[seq[key].state][seq[key].parent.state])                  
-                    path.insert(0, seq[key].state)
+                    path.insert(0, seq[key].road)          
+                    path.insert(0, seq[key].state)               
                     seq[key] = seq[key].parent
                 
-                return cost, list(set(path))
-            
+                path.insert(0, start)
+
+                return cost, path            
             
         for next in current.keys():      
                        
@@ -124,58 +97,7 @@ def uniform_cost_search(graph, query):
                 priority = estimatedCost                          
                  
                 frontier.put((priority, next, graph[next]))
-                seq[next] = road.Sequence(name, seq[name])
+                                
+                seq[next] = road.Sequence(name, graph[name][next][0], seq[name])
 
-#                 name = next
-            
-
-                
-                
-
-#           
-#         if node[0] == goal:
-#               
-#             print(node[0], currentCost)
-#               
-#             return currentCost, q
-#           
-#         next = adjacent_nodes(graph, name)
-#          
-#         for n in next:
-#               
-#             if tuple(n) not in explored:
-#                  
-#                 print(n, name)
-#                   
-#                 explored.add(tuple(n))
-#                 q[n] = graph[n][name]
-#                 name = n
-                 
-         
-           
-#         for c in node:
-#              
-#             if c[0] == goal:
-#                  
-# #                 print(c[0], cost)
-#                 return currentCost, q
-#                  
-#          
-#         adjacent = add_nodes(node)
-#    
-#         for n in adjacent:
-#              
-#             print(n, graph[n])
-#              
-# #             expectedCost = currentCost[node] + graph[n]             
-#                                            
-#             if tuple(n) not in explored:             
-#                                  
-#                 explored.add(tuple(n))
-#                 q[n] = graph[n]
-#                 node = n
-   
-#                 print(n, graph[n])
-        i += 1      
-    
-    return currentCost, q
+    return None, None

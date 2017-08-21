@@ -12,10 +12,9 @@ outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\CO
 
 import argparse
 import pdb
-
-import numpy as np
-
+import time
 import re
+
 import road
 import search
 
@@ -96,31 +95,49 @@ def queries_read(array):
        
 def main():
     
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("environment", help = "list of roads and info")
-#     parser.add_argument("query", help = "initial and final locations")
-#     parser.add_argument("output", help = "file to output results")
-#     args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("environment", help = "list of roads and info")
+    parser.add_argument("query", help = "initial and final locations")
+    parser.add_argument("output", help = "file to output results")
+    args = parser.parse_args()
+   
+    f1 = file_read(args.environment)
+    f2 = file_read(args.query)
+    f3 = open(args.output, "w")
 
-    f1 = file_read(environmentFile)
-    f2 = file_read(queryFile)
+#     f1 = file_read(environmentFile)
+#     f2 = file_read(queryFile)
+#     f3 = open(outputFile, "w")
+    
+    #String preprocessing done
+    t1 = time.time()
     
     junction = junction_read(f1)
     queries = queries_read(f2)
     
-#     for j, i in junction.iteritems(): print(j,i)
+    #Search algorithm starts here
+    for q in queries:
+        
+        cost, path = search.uniform_cost_search(junction, q)
+        
+        if path == None:
+        
+            f3.write(str('no-path' + '\n'))
+            
+        else:
+            
+            f3.write(str(cost) + ' ; ')
+                        
+            for i in range(len(path) - 1): f3.write(str(path[i]) + ' - ')
+            
+            f3.write(str(path[i + 1]) + '\n')
 
-    
-#     for q in queries:
-#         cost, path = search.breadth_first_search(junction, q)
-#      
-#           
-#         print(cost, path)
-
-    cost, path = search.uniform_cost_search(junction, queries[0])
-    print(cost, path)
+    t2 = time.time()
+#     f3.write(str(['Time taken: ', float(t2-t1) * 1000000., 'us']))
+#     print('Time taken: ', float(t2-t1) * 1000., 'ms')
 
     return 0;
 
 if __name__ == "__main__":
+    
     main()

@@ -18,42 +18,17 @@ class Query:
     def __repr__(self):
         
         return "%s, %s, %s, %s\n" % (self.name1, self.address1,
-                                     self.name2, self.address2)        
+                                     self.name2, self.address2)   
+                
 
-
-class Node:
-    
-    def __init__(self, addrNo, j1, j2, length, nLots, previous =  None):
-        
-        self.j1 = j1
-        self.j2 = j2
-        self.roadLength = length
-        self.plotNum = nLots
-        self.cost1 = 2*self.roadLength/self.plotNum*math.ceil(addrNo/2.)-1
-        self.cost2 = self.roadLength - self.cost1
-        self.trace = previous    
-    
-    def __repr__(self):
-        
-        return "%s, %s, %s, %s, %s, %s\n" % (self.j1, self.j2, 
-                                         self.roadLength, self.plotNum, 
-                                         self.cost1, self.cost2)
-        
-    def update(self, name, addrNo, type):
-        
-        if name == self.name and addrNo == self.addrNo:
-            
-            if type == 's':
-                
-                self.start = 1
-                
-            elif type == 'e':
-                
-                self.end
-                
 class Sequence:
     
-    def __init__(self, current, parent):
+    def __init__(self, current, road, parent):
         
-        self.state = current
+        self.state = current        
+        self.road = road
         self.parent = parent
+        
+    def __repr__(self):
+        
+        return "%s, %s, %s\n" % (self.state, self.road, self.parent)

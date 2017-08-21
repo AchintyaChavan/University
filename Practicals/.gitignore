@@ -24,3 +24,9 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# Txt Files
+*.txt
+
+# Zip Files
+*.zip
