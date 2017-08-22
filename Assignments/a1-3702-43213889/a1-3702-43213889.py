@@ -6,9 +6,13 @@ Created on 13 Aug. 2017
 @course:  COMP3702
 
 '''
-queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query-simple.txt"
-environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test-simple.txt"
-outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\output-simple.txt"
+# queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query2.txt"
+# environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test2.txt"
+# outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\output2.txt"
+
+# queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query-simple.txt"
+# environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test-simple.txt"
+# outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\output-simple.txt"
 
 import argparse
 import pdb
@@ -100,7 +104,7 @@ def main():
     parser.add_argument("query", help = "initial and final locations")
     parser.add_argument("output", help = "file to output results")
     args = parser.parse_args()
-   
+    
     f1 = file_read(args.environment)
     f2 = file_read(args.query)
     f3 = open(args.output, "w")
@@ -133,7 +137,7 @@ def main():
             f3.write(str(path[i + 1]) + '\n')
 
     t2 = time.time()
-#     f3.write(str(['Time taken: ', float(t2-t1) * 1000000., 'us']))
+#     f3.write(str(['Time taken: ', float(t2-t1) * 1000., 'ms']))
 #     print('Time taken: ', float(t2-t1) * 1000., 'ms')
 
     return 0;

@@ -9,8 +9,10 @@ import road
 import Queue as Q
 
 def address_length(length, plotSize, addrNo):
-        
-    return round(2 * length/(1.*plotSize) * math.ceil(addrNo / 2.) - 1., 3)
+    
+#     print(length/(1.*plotSize))
+    L_n = float(length / (1. * plotSize))
+    return round(L_n * (2. * math.ceil( addrNo/(2.) ) - 1), 3)
 
 def starting_node(graph, start):
     
@@ -48,6 +50,8 @@ def uniform_cost_search(graph, query):
     frontier.put((0, j2, graph[j2]))
     currentCost[j1] = address_length(node[3], node[4], a1)
     currentCost[j2] = node[3] - address_length(node[3], node[4], a1)
+    
+#     print(currentCost)
     
     seq[j1] = road.Sequence(j1, graph[j1][j2][0], None)
     seq[j2] = road.Sequence(j2, graph[j1][j2][0], None)
