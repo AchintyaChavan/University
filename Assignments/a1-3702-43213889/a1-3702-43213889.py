@@ -6,9 +6,9 @@ Created on 13 Aug. 2017
 @course:  COMP3702
 
 '''
-# queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query2.txt"
-# environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test2.txt"
-# outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\output2.txt"
+queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query2.txt"
+environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test2.txt"
+outputFile = "output2.txt"
 
 # queryFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\query-simple.txt"
 # environmentFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a1-3702-43213889\\test-simple.txt"
@@ -18,6 +18,7 @@ import argparse
 import pdb
 import time
 import re
+import os, sys
 
 import road
 import search
@@ -98,20 +99,23 @@ def queries_read(array):
     return queries       
        
 def main():
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument("environment", help = "list of roads and info")
     parser.add_argument("query", help = "initial and final locations")
     parser.add_argument("output", help = "file to output results")
     args = parser.parse_args()
-    
+     
     f1 = file_read(args.environment)
     f2 = file_read(args.query)
-    f3 = open(args.output, "w")
+    
+    outFile = os.path.join(os.path.dirname(sys.argv[1]), args.output)
+    
+    f3 = open(outFile, "w")
 
 #     f1 = file_read(environmentFile)
 #     f2 = file_read(queryFile)
-#     f3 = open(outputFile, "w")
+#     f3 = open(os.path.join(cwd, outputFile), "w")
     
     #String preprocessing done
     t1 = time.time()
@@ -121,24 +125,26 @@ def main():
     
     #Search algorithm starts here
     for q in queries:
-        
+         
         cost, path = search.uniform_cost_search(junction, q)
-        
+         
         if path == None:
-        
+         
             f3.write(str('no-path' + '\n'))
-            
+             
         else:
-            
+             
             f3.write(str(cost) + ' ; ')
-                        
+                         
             for i in range(len(path) - 1): f3.write(str(path[i]) + ' - ')
-            
+             
             f3.write(str(path[i + 1]) + '\n')
-
+ 
     t2 = time.time()
 #     f3.write(str(['Time taken: ', float(t2-t1) * 1000., 'ms']))
 #     print('Time taken: ', float(t2-t1) * 1000., 'ms')
+
+    sys.stdout.write('\nOutput file stored as ' + str(outFile) + '\n')
 
     return 0;
 
