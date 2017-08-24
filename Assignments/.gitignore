@@ -30,3 +30,10 @@ wheels/
 
 # Zip Files
 *.zip
+
+# Word Files
+*.docx
+*.tmp
+
+# PDF Files
+*.pdf
