@@ -7,6 +7,9 @@ __pycache__/
 # C extensions
 *.so
 
+# Java Extensions
+*.java
+
 # Distribution / packaging
 .Python
 build/
@@ -37,3 +40,6 @@ wheels/
 
 # PDF Files
 *.pdf
+
+# GIF
+*.gif
