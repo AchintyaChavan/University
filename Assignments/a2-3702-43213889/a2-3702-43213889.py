@@ -5,9 +5,10 @@ Created on 9 Sep. 2017
 '''
 
 import argparse
-import re
-import os
 import numpy as np
+import os
+import re
+import random
 
 import config
 
@@ -36,8 +37,7 @@ def obstacle_config(array):
 
 def asv_config(array):
     
-    
-    goal = {};
+    goal = {}
     asvs = config.ASV(int(array.pop(0)),{})
     
     s = re.findall("\d+\.\d+", array[0])
@@ -64,6 +64,19 @@ def file_read(filename):
     return array
 
 
+def config_generator(sampleSize, n):
+    
+    samples = np.array(random.sample(xrange(0,100), sampleSize))
+    configurations
+    
+    for 
+        
+    print(samples)
+    
+    
+#     return configurations
+
+
 def main():
 
 #     parser = argparse.ArgumentParser()
@@ -84,6 +97,8 @@ def main():
     asvs, array, goal = asv_config(f1)
         
     obstacles = obstacle_config(array)
+    
+    config_generator(20, asvs.length)
     
 #     print array
     
