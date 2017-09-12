@@ -67,10 +67,7 @@ def file_read(filename):
 def config_generator(sampleSize, n):
     
     samples = np.array(random.sample(xrange(0,100), sampleSize))
-    configurations
-    
-    for 
-        
+
     print(samples)
     
     

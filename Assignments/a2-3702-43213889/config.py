@@ -33,9 +33,9 @@ class Obstacle:
     
 class Configuration:
     
-    def __init__(self, x1, y1, angle, number):
+    def __init__(self, x, y, angle, number):
                 
-        self.x = x1
-        self.y = y1
+        self.x = x
+        self.y = y
         self.angle = angle
         self.asv = number        
