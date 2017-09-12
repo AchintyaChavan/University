@@ -5,15 +5,18 @@ Created on 9 Sep. 2017
 '''
 class ASV:
     
-    def __init__(self, number, initial):
+    def __init__(self, number, pos = {}):
         
         self.length = number
-        self.initial = initial
+        self.position = pos
         
     def __repr__(self):
         
-        return "%s, %s, %s, %s\n" % (self.length, self.initial)   
-                
+        return "%s, %s\n" % (self.length, self.position)    
+    
+    def get_pos(self, asvNum):
+                   
+        return self.position[asvNum]       
 
 class Obstacle:
     
@@ -26,4 +29,13 @@ class Obstacle:
         
     def __repr__(self):
         
-        return "%s, %s, %s\n" % (self.v1, self.v2, self.v3, self.v4)
+        return "%s, %s, %s, %s\n" % (self.v1, self.v2, self.v3, self.v4)
+    
+class Configuration:
+    
+    def __init__(self, x, y, angle, number):
+                
+        self.x = x
+        self.y = y
+        self.angle = angle
+        self.asv = number        
