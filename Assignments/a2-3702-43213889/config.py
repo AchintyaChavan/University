@@ -3,6 +3,10 @@ Created on 9 Sep. 2017
 
 @author: AC
 '''
+<<<<<<< HEAD
+=======
+
+>>>>>>> branch 'master' of https://github.com/AchintyaChavan/University.git
 from shapely import geometry
 
 class ASVConfig:
