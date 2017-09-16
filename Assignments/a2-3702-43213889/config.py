@@ -3,7 +3,6 @@ Created on 9 Sep. 2017
 
 @author: AC
 '''
-
 from shapely import geometry
 
 class ASVConfig:
