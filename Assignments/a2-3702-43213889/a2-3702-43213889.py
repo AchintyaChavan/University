@@ -116,7 +116,6 @@ def main():
 #     outFile = os.path.join(os.path.dirname(sys.argv[1]), args.outputFile)
 #     
 #     f2 = open(outFile, "w")
-
     f1 = file_read(inputFile)
     
 #     print(f1)
