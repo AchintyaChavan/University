@@ -3,7 +3,6 @@ Created on 16 Sep. 2017
 
 @author: AC
 '''
-
 # The maximum distance any ASV can travel between two states
 MAX_STEP = 0.001;
 # The minimum allowable boom length
