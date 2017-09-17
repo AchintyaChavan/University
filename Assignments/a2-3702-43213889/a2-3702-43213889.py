@@ -18,7 +18,7 @@ import random
 import config
 import tester
 
-inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Assignments\\a2-3702-43213889\\a2-tools\\a2-tools\\testcases\\3ASV-easy.txt"
+inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
 outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
 
 
@@ -43,12 +43,17 @@ def obstacle_config(array):
         s = re.findall("\d+\.\d+", array[i])        
         s = [float(i) for i in s]        
 
-        v1 = (s[0], s[1])
-        v2 = (s[2], s[3])
-        v3 = (s[4], s[5])
-        v4 = (s[6], s[7])        
+#         v1 = (s[0], s[1])
+#         v2 = (s[2], s[3])
+#         v3 = (s[4], s[5])
+#         v4 = (s[6], s[7])
+
+        x = s[0]
+        y = s[1]
+        w = s[2] - s[0]
+        h = s[5] - s[1]
         
-        obstacles[i] = config.Obstacle(v1, v2, v3, v4)
+        obstacles[i] = config.Obstacle(x, y, w, h)
 
     return obstacles
 
