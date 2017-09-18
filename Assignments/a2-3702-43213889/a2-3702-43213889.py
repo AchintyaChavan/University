@@ -5,20 +5,7 @@ Created on 9 Sep. 2017
 '''
     
     
-# import pip
-#     
-# pip.main(['install', "H:\Documents\Achintya\UQ\Engineering\5th Year\Sem 2 2017\COMP3702\Assignments\a2-3702-43213889\Shapely-1.5.17-cp27-cp27m-win32.whl"])
-    
-import argparse
-import numpy as np
-import os
-import re
-import random
 
-# import config
-# import ProblemSpec
-import tester
-# from tester import Tester as ts
 
 inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
 outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
@@ -117,14 +104,14 @@ def asvConfig_Generator(sampleSize, n):
 
 def main():
 
-# #     parser = argparse.ArgumentParser()
-# #     parser.add_argument("inputFile", help = "list of roads and info")
-# #     parser.add_argument("outputFile", help = "initial and final locations")
-# #     args = parser.parse_args()
+#     parser = argparse.ArgumentParser()
+#     parser.add_argument("inputFile", help = "list of roads and info")
+#     parser.add_argument("outputFile", help = "initial and final locations")
+#     args = parser.parse_args()
 # #      
 # #     f1 = file_read(args.inputFile)
 # #     
-# #     outFile = os.path.join(os.path.dirname(sys.argv[1]), args.outputFile)
+# #     outFile = os.path.join(os.path.realpath(__file__), args.outputFile)
 # #     
 # #     f2 = open(outFile, "w")
 #     f1 = file_read(inputFile)
@@ -142,6 +129,7 @@ def main():
 # #     print array
 #     
 # #     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
+  
     
     # Initialise problem file
     problem = tester.ProblemSpec.ProblemSpec()
@@ -160,4 +148,17 @@ def main():
 
 if __name__ == "__main__":
     
+    import argparse
+    import numpy as np
+    import os
+
+    import pip          
+    pip.main(['install', os.path.join(os.getcwd(), "Shapely-1.5.17-cp27-none-win32.whl")])
+        
+    
+    import re
+    import random
+    
+    import tester
+        
     main()
