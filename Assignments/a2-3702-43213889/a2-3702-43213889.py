@@ -71,6 +71,8 @@ def asvConfig_Generator(sampleSize, n):
 
 #     samples = zip(xs, ys)
     
+    r = tester.Tester.MAX_BOOM_LENGTH
+    
     th = (n - 2) * 180.
 
     configurations = []
@@ -87,11 +89,11 @@ def asvConfig_Generator(sampleSize, n):
             theta = random.randrange(-th, th)      
             th = th - theta
             
-            theta = np.deg2rad(theta)
+            theta = np.deg2rad(theta * (1 + tester.Tester.DEFAULT_MAX_ERROR * n))
 
             (x,y) = c.getPosition(j-1)
             
-            c.__add__((x + 0.05 * np.cos(theta), y + 0.05 * np.sin(theta)))
+            c.__add__((x + r * np.cos(theta), y + r * np.sin(theta)))
        
         configurations.append(c)
        
@@ -141,9 +143,19 @@ def main():
     ts = tester.Tester()
     ts.ps = problem
     
-    ts.ps.setPath(asvConfig_Generator(20, problem.initialState.getASVCount()))
-    ts.testByName("steps", 1, 1)
+    sample = asvConfig_Generator(20, problem.initialState.getASVCount())
     
+    ts.ps.setPath(sample)
+    
+    c1=ts.getCollidingStates()
+    c2=ts.getNonConvexStates()
+    c3=ts.getInvalidAreaStates()
+    
+    print(c1)
+    print(c2)
+    print(c3)
+    print(list(set(c1)|set(c2)|set(c3)))  
+
     return;
 
 if __name__ == "__main__":
@@ -152,10 +164,9 @@ if __name__ == "__main__":
     import numpy as np
     import os
 
-    import pip          
-    pip.main(['install', os.path.join(os.getcwd(), "Shapely-1.5.17-cp27-none-win32.whl")])
-        
-    
+#     import pip          
+#     pip.main(['install', os.path.join(os.getcwd(), "Shapely-1.5.17-cp27-none-win32.whl")])
+            
     import re
     import random
     

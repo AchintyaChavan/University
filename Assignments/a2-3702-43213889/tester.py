@@ -309,7 +309,7 @@ class Tester:
             total += points[i][0] * (points[i+1][1] - points[i-1][1])
 
         area = abs(total)/2
-        return (area >= getMinimumArea(cfg.getASVCount()) - self.maxError)
+        return (area >= self.getMinimumArea(cfg.getASVCount()) - self.maxError)
 
     def getInvalidAreaStates(self):
         """
@@ -318,7 +318,7 @@ class Tester:
         path = self.ps.getPath()
         badStates = []
         for i in range(len(path)):
-            if not hasEnoughArea(path[i]):
+            if not self.hasEnoughArea(path[i]):
                 badStates.append(i)
 
         return(badStates)
