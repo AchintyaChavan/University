@@ -19,7 +19,7 @@ class Tester:
             Constructor.
         """
         self.maxError = maxError
-        self.lenientBounds = grow(BOUNDS, self.maxError)
+        self.lenientBounds = self.grow(self.BOUNDS, self.maxError)
 
         self.ps = ProblemSpec.ProblemSpec()
 
@@ -87,7 +87,7 @@ class Tester:
             configuration
         """
         print("Test " + str(testNo) + ": Goal state")
-        if (not hasGoalLast()):
+        if (not self.hasGoalLast()):
             print("FAILED: Solution path must end at goal state.")
             return (False)
         else:
@@ -146,7 +146,7 @@ class Tester:
             print("FAILED: Distance exceeds 0.001 for "+str(len(badSteps))+" of "+str(len(self.ps.getPath()) - 1)+" step(s).")
             if verbose:
                 print("Starting line for each invalid step:")
-                print(str(addToAll(badSteps,2)))
+                print(str(self.addToAll(badSteps,2)))
             return (False)
         else:
             print("Passed.")
@@ -190,7 +190,7 @@ class Tester:
 
             if verbose:
                 print ("Line for each invalid cfg:")
-                print(str(addToAll(badStates,2)))
+                print(str(self.addToAll(badStates,2)))
 
             return (False)
         else:
@@ -279,13 +279,13 @@ class Tester:
             not self intersection)
         """
         print("Test " + str(testNo) + ": Convexity")
-        badStates = getNonConvexStates()
+        badStates = self.getNonConvexStates()
         if badStates:
             print("FAILED: " + str(len(badStates)) + " out of " + str(len(self.ps.getPath())) + " state(s) are not convex.")
 
             if verbose:
                 print ("Line for each invalid cfg:")
-                print(str(addToAll(badStates,2)))
+                print(str(self.addToAll(badStates,2)))
 
             return(False)
         else:
@@ -328,13 +328,13 @@ class Tester:
             Checks whether each config has sufficient internal area
         """
         print("Test " + str(testNo) + ": Areas")
-        badStates = getInvalidAreaStates()
+        badStates = self.getInvalidAreaStates()
         if badStates:
             print("FAILED: " + str(len(badStates)) + " of " + str(len(self.ps.getPath())) + " state(s) have insufficient area.")
 
             if verbose:
                 print ("Line for each invalid cfg:")
-                print(str(addToAll(badStates,2)))
+                print(str(self.addToAll(badStates,2)))
 
             return (False)
         else:
@@ -382,14 +382,14 @@ class Tester:
             @return whether the test was successful or not
         """
         print("Test " + str(testNo) + ": Bounds")
-        badStates = getOutOfBoundsStates()
+        badStates = self.getOutOfBoundsStates()
         if badStates:
             print("FAILED: " + str(len(badStates)) + " of " + str(len(self.ps.getPath())) +
                   " state(s) go out of the workspace bounds.")
 
             if verbose:
                 print ("Line for each invalid cfg:")
-                print(str(addToAll(badStates,2)))
+                print(str(self.addToAll(badStates,2)))
 
             return (False)
         else:
@@ -410,12 +410,14 @@ class Tester:
             @return whether the given config collides with the given obstacles
         """
         points = cfg.getASVPositions()
+        
         for o in obs:
-            lenientParams = grow(o.getRect(), -self.maxError)
-            lenientRect = rectangle2D.Rectangle2D(lenientParams[0],lenientParams[1],lenientParams[2],lenientParams[3])
+
+            lenientParams = self.grow(o.getRect(), -self.maxError)
+            lenientRect = config.Obstacle(lenientParams[0],lenientParams[1],lenientParams[2],lenientParams[3])
 
             for i in range(1, len(points)):
-                if (line2D(points[i-1],points[i]).intersectsRect(lenientRect)):
+                if (line2D.Line2D(points[i-1],points[i]).intersectsRect(lenientRect)):
                     return (True)
 
         return (False)
@@ -424,11 +426,12 @@ class Tester:
         """
             Returns the path indices of any states that collide with obstacles
         """
-        path = self.ps.getPath
+        
         badStates = []
+        path = self.ps.getPath()
 
         for i in range(len(path)):
-            if (hasCollision(path[i], self.ps.getObstacles())):
+            if (self.hasCollision(path[i], self.ps.getObstacles())):
                 badStates.append(i)
         return (badStates)
 
@@ -443,14 +446,14 @@ class Tester:
             @return whether the test was successful or not
         """
         print("Test " + str(testNo) + ": Collisions")
-        badStates = getCollidingStates()
+        badStates = self.getCollidingStates()
         if badStates:
             print("FAILED: " + str(len(badStates)) + " of " + str(len(self.ps.getPath())) +
                   " state(s) collide with obstacles.")
 
             if verbose:
                 print ("Line for each invalid cfg:")
-                print(str(addToAll(badStates,2)))
+                print(str(self.addToAll(badStates,2)))
 
             return (False)
         else:
@@ -482,21 +485,21 @@ class Tester:
             Runs a test by its name
         """
         if (testName == "initial"):
-            return testInitialFirst(testNo, verbose)
+            return self.testInitialFirst(testNo, verbose)
         elif (testName == "goal"):
-        	return testGoalLast(testNo, verbose)
+        	return self.testGoalLast(testNo, verbose)
         elif (testName == "steps"):
-        	return testValidSteps(testNo, verbose)
+        	return self.testValidSteps(testNo, verbose)
         elif (testName == "booms"):
-        	return testBoomLengths(testNo, verbose)
+        	return self.testBoomLengths(testNo, verbose)
         elif (testName == "convexity"):
-        	return testConvexity(testNo, verbose)
+        	return self.testConvexity(testNo, verbose)
         elif (testName == "areas"):
-        	return testAreas(testNo, verbose)
+        	return self.testAreas(testNo, verbose)
         elif (testName == "bounds"):
-        	return testBounds(testNo, verbose)
+        	return self.testBounds(testNo, verbose)
         elif (testName == "collisions"):
-        	return testCollisions(testNo, verbose)
+        	return self.testCollisions(testNo, verbose)
         elif (testName == "cost"):
-        	return testTotalCost(testNo, verbose)
+        	return self.testTotalCost(testNo, verbose)
         return (True)

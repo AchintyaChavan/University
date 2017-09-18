@@ -118,8 +118,15 @@ class ASVConfig:
         if len(self.asvPositions) != len(otherState):
             return(-1)
 
+        print(len(self.asvPositions))
+        print(self.asvPositions)
+        print(type(self.asvPositions[:]))
+
         totalDistance = 0
         for i in range(len(self.asvPositions)):
+            
+#             print(i)
+            
             p1 = self.asvPositions[i]
             p2 = otherState.getPos(i)
             distance = np.sqrt( abs(p2[0] - p1[0])**2 + abs(p2[1] - p1[1])**2 )
@@ -179,12 +186,7 @@ class Obstacle:
 #                                          list(v2),
 #                                          list(v3),
 #                                          list(v4)])
-                
-    def __repr__(self):
-        
-        return "%s, %s, %s, %s\n %s\n" % (self.v1, self.v2, self.v3, self.v4, self.polygon)
-    
-    
+  
     def __equals__(self,rect):
         """
             Returns true if the rectangle is equal to self
@@ -249,8 +251,6 @@ class Obstacle:
             xMax = stringList[i*2] if stringList[i*2] > xMax else xMax
             yMin = stringList[(i*2) + 1] if stringList[(i*2) + 1] < yMin else yMin
             yMax = stringList[(i*2) + 1] if stringList[(i*2) + 1] > yMax else yMax
-
-        
 
         self.rect = [xMin, yMin, xMax - xMin, yMax - yMin]
 

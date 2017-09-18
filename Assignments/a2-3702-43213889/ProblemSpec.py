@@ -59,7 +59,10 @@ class ProblemSpec:
 
 #             self.obstacles = [None] * numObstacles
             for j in range(numObstacles):
-                self.obstacles.append(config.Obstacle().construct(inputData[i])) #TODO: Swap the contructors
+                o = config.Obstacle()
+                o.construct(inputData[i])
+
+                self.obstacles.append(o)
                 i += 1
 
             self.problemLoaded = True
@@ -134,9 +137,9 @@ class ProblemSpec:
             @return The true total cost of the currently loaded solution
         """
         cost = 0
-        c0 = ASVconfig.ASVConfig(self.path[0])
+        c0 = config.ASVConfig(self.path[0])
         for i in range(1, len(self.path)):
-            c1 = ASVconfig.ASVConfig(self.path[i])
+            c1 = config.ASVConfig(self.path[i])
             cost += c0.totalDistance(c1)
             c0 = c1
 
@@ -169,7 +172,7 @@ class ProblemSpec:
     def setPath(self, path):
         if (not self.problemLoaded):
             return(None)
-        self.path = path
+        self.path = path       
         self.solutionCost = self.calculateTotalCost()
         self.solutionLoaded = True
 

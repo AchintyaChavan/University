@@ -18,6 +18,7 @@ import random
 # import config
 # import ProblemSpec
 import tester
+# from tester import Tester as ts
 
 inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
 outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
@@ -89,30 +90,28 @@ def asvConfig_Generator(sampleSize, n):
 
     for i in range(len(xs)):
         
-        c = tester.config.ASVConfig([])        
-        c.asvPositions.append((xs[i], ys[i]))
-            
+        temp = []
+        temp.append(tuple([xs[i], ys[i]]))
+
+        c = tester.config.ASVConfig(temp)       
+       
         for j in range(1, n):    
                         
             theta = random.randrange(-th, th)      
             th = th - theta
             
             theta = np.deg2rad(theta)
+
+            (x,y) = c.getPosition(j-1)
             
-            (x,y) = c.asvPositions[j - 1]
-            
-            c.asvPositions.append((x + 0.05 * np.cos(theta), y + 0.05 * np.sin(theta)))
-            
+            c.__add__((x + 0.05 * np.cos(theta), y + 0.05 * np.sin(theta)))
+       
         configurations.append(c)
-    
-#     print(len(configurations))
-    
-#     print(configurations[0].get_config())
-    
+       
 #     for i in range(len(configurations)):
 #         
 #         print(configurations[i].__str__())
-
+#     print(len(configurations))
     return configurations
 
 def main():
@@ -143,10 +142,18 @@ def main():
 #     
 # #     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
     
+    # Initialise problem file
     problem = tester.ProblemSpec.ProblemSpec()
     problem.loadProblem(inputFile)
-    problem.saveSolution(outputFile)
-    asvConfig_Generator(sampleSize = 20, problem.initialState.getASVCount())
+
+#     problem.saveSolution(outputFile)
+    
+    # Initialise tester
+    ts = tester.Tester()
+    ts.ps = problem
+    
+    ts.ps.setPath(asvConfig_Generator(20, problem.initialState.getASVCount()))
+    ts.testByName("collisions", 1, 1)
     
     return;
 
