@@ -15,7 +15,8 @@ import os
 import re
 import random
 
-import config
+# import config
+# import ProblemSpec
 import tester
 
 inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
@@ -88,8 +89,8 @@ def asvConfig_Generator(sampleSize, n):
 
     for i in range(len(xs)):
         
-        c = config.ASVConfig(n, {})        
-        c.position[0] = (xs[i], ys[i])
+        c = tester.config.ASVConfig([])        
+        c.asvPositions.append((xs[i], ys[i]))
             
         for j in range(1, n):    
                         
@@ -98,9 +99,9 @@ def asvConfig_Generator(sampleSize, n):
             
             theta = np.deg2rad(theta)
             
-            (x,y) = c.position[j - 1]
+            (x,y) = c.asvPositions[j - 1]
             
-            c.position[j] = (x + 0.05 * np.cos(theta), y + 0.05 * np.sin(theta))
+            c.asvPositions.append((x + 0.05 * np.cos(theta), y + 0.05 * np.sin(theta)))
             
         configurations.append(c)
     
@@ -108,35 +109,44 @@ def asvConfig_Generator(sampleSize, n):
     
 #     print(configurations[0].get_config())
     
+#     for i in range(len(configurations)):
+#         
+#         print(configurations[i].__str__())
+
     return configurations
 
 def main():
 
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("inputFile", help = "list of roads and info")
-#     parser.add_argument("outputFile", help = "initial and final locations")
-#     args = parser.parse_args()
+# #     parser = argparse.ArgumentParser()
+# #     parser.add_argument("inputFile", help = "list of roads and info")
+# #     parser.add_argument("outputFile", help = "initial and final locations")
+# #     args = parser.parse_args()
+# #      
+# #     f1 = file_read(args.inputFile)
+# #     
+# #     outFile = os.path.join(os.path.dirname(sys.argv[1]), args.outputFile)
+# #     
+# #     f2 = open(outFile, "w")
+#     f1 = file_read(inputFile)
+#     
+# #     print(f1)
+#     
+#     asvs, array, goal = asv_config(f1)
+#     
+# #     print(asvs)
+#         
+#     obstacles = obstacle_config(array)
 #      
-#     f1 = file_read(args.inputFile)
+#     asvConfig_Generator(20, asvs.length)
 #     
-#     outFile = os.path.join(os.path.dirname(sys.argv[1]), args.outputFile)
+# #     print array
 #     
-#     f2 = open(outFile, "w")
-    f1 = file_read(inputFile)
+# #     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
     
-#     print(f1)
-    
-    asvs, array, goal = asv_config(f1)
-    
-#     print(asvs)
-        
-    obstacles = obstacle_config(array)
-    
-    asvConfig_Generator(20, asvs.length)
-    
-#     print array
-    
-#     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
+    problem = tester.ProblemSpec.ProblemSpec()
+    problem.loadProblem(inputFile)
+    problem.saveSolution(outputFile)
+    asvConfig_Generator(sampleSize = 20, problem.initialState.getASVCount())
     
     return;
 

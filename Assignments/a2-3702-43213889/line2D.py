@@ -1,4 +1,4 @@
-import math
+import numpy as np
 from shapely.geometry import LineString
 
 class Line2D:
@@ -89,7 +89,7 @@ class Line2D:
                 Whether the line intersects the rectangle or not
         """
         midpoint = (self.c0[0]+0.5*self.c1[0], self.c0[1]+0.5*self.c1[1])
-        length = math.sqrt((self.c1[0]-self.c0[0])**2 + (self.c1[1]-self.c0[1])**2)
+        length = np.sqrt((self.c1[0]-self.c0[0])**2 + (self.c1[1]-self.c0[1])**2)
 
 
         if rect.distance(midpoint) > length:
