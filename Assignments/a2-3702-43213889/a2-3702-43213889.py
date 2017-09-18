@@ -112,6 +112,7 @@ def asvConfig_Generator(sampleSize, n):
 #         
 #         print(configurations[i].__str__())
 #     print(len(configurations))
+
     return configurations
 
 def main():
@@ -153,7 +154,7 @@ def main():
     ts.ps = problem
     
     ts.ps.setPath(asvConfig_Generator(20, problem.initialState.getASVCount()))
-    ts.testByName("collisions", 1, 1)
+    ts.testByName("steps", 1, 1)
     
     return;
 

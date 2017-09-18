@@ -119,7 +119,7 @@ class Tester:
 
             @return whether the step from s0 to s1 is a valid step
         """
-        return (cfg0.maxDistance(cfg1) <= self.maxError + MAX_STEP)
+        return (cfg0.maxDistance(cfg1) <= self.maxError + self.MAX_STEP)
 
     def getInvalidSteps(self):
         """
@@ -130,7 +130,7 @@ class Tester:
         state = path[0]
         for i in range(1,len(path)):
             nextState = path[i]
-            if (not isValidStep(state,nextState)):
+            if (not self.isValidStep(state,nextState)):
                 badSteps.append(i-1)
             state = nextState
         return (badSteps)
@@ -141,7 +141,7 @@ class Tester:
             primitive step distance
         """
         print("Test " + str(testNo) + ": Step sizes")
-        badSteps = getInvalidSteps()
+        badSteps = self.getInvalidSteps()
         if badSteps:
             print("FAILED: Distance exceeds 0.001 for "+str(len(badSteps))+" of "+str(len(self.ps.getPath()) - 1)+" step(s).")
             if verbose:
@@ -228,12 +228,12 @@ class Tester:
         totalTurned = 0.0
         p0 = points[0]
         p1 = points[1]
-        angle = np.atan2(p1[1] - p0[1], p1[0] - p0[0])
+        angle = np.arctan2(p1[1] - p0[1], p1[0] - p0[0])
 
         for i in range(2,len(points)):
             p2 = points[i]
-            nextAngle = np.atan2(p2[1] - p1[1], p2[0] - p1[0])
-            turningAngle = normaliseAngle(nextAngle - angle)
+            nextAngle = np.arctan2(p2[1] - p1[1], p2[0] - p1[0])
+            turningAngle = self.normaliseAngle(nextAngle - angle)
 
             if turningAngle == np.pi:
                 return(False)
@@ -269,7 +269,7 @@ class Tester:
         badStates = []
         path = self.ps.getPath()
         for i in range(len(path)):
-            if not isConvex(path[i]):
+            if not self.isConvex(path[i]):
                 badStates.append(i)
         return (badStates)
 
@@ -367,7 +367,7 @@ class Tester:
         path = self.ps.getPath()
         badStates = []
         for i in range(len(path)):
-            if (not fitsBounds(path[i])):
+            if (not self.fitsBounds(path[i])):
                 badStates.append(i)
         return (badStates)
 

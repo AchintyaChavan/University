@@ -137,9 +137,12 @@ class ProblemSpec:
             @return The true total cost of the currently loaded solution
         """
         cost = 0
-        c0 = config.ASVConfig(self.path[0])
+        
+#         c0 = config.ASVConfig(self.path[0])
+        c0 = self.path[0]
         for i in range(1, len(self.path)):
-            c1 = config.ASVConfig(self.path[i])
+#             c1 = config.ASVConfig(self.path[i])
+            c1 = self.path[i]
             cost += c0.totalDistance(c1)
             c0 = c1
 

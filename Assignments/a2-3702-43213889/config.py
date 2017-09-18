@@ -99,7 +99,7 @@ class ASVConfig:
         maxDistance = 0
         for i in range(len(self.asvPositions)):
             p1 = self.asvPositions[i]
-            p2 = otherState.getPos(i)
+            p2 = otherState.getPosition(i)
             distance = np.sqrt( abs(p2[0] - p1[0])**2 + abs(p2[1] - p1[1])**2 )
 
             maxDistance = max([distance, maxDistance])
@@ -118,17 +118,10 @@ class ASVConfig:
         if len(self.asvPositions) != len(otherState):
             return(-1)
 
-        print(len(self.asvPositions))
-        print(self.asvPositions)
-        print(type(self.asvPositions[:]))
-
         totalDistance = 0
         for i in range(len(self.asvPositions)):
-            
-#             print(i)
-            
             p1 = self.asvPositions[i]
-            p2 = otherState.getPos(i)
+            p2 = otherState.getPosition(i)
             distance = np.sqrt( abs(p2[0] - p1[0])**2 + abs(p2[1] - p1[1])**2 )
             #TODO: remove unnecesary variable when tested
             totalDistance += distance
