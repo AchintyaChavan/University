@@ -4,9 +4,6 @@ Created on 9 Sep. 2017
 @author: AC
 '''
     
-    
-
-
 inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
 outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
 
@@ -104,6 +101,42 @@ def asvConfig_Generator(sampleSize, n):
 
     return configurations
 
+def test_configurations(ts, sample):
+       
+    c3 = ts.getInvalidAreaStates()  #Area constraint
+    c4 = ts.getNonConvexStates()    #Convexity and self intersection constraint    
+    c5 = ts.getCollidingStates()    #Collision/Intersection constraint   
+    c6 = ts.getOutOfBoundsStates()  #Bounds constraint
+    
+    
+    badStates = list(set(c3)|set(c4)|set(c5)|set(c6))     
+    idx = [i for i in range(len(sample))]    
+    goodStates = list(set(idx) - set(badStates))
+    
+    validConfigs = [sample[i] for i in goodStates] 
+    
+#     print(c3)
+#     print(c4)
+#     print(c5)
+#     print(c6)
+#      
+#     print(badStates)
+#     print(goodStates)
+#     print(validConfigs) 
+
+    return validConfigs 
+    
+def graph_creation(configs, ts):
+    
+    #Valid primitive step constraint
+    #
+    tree = []
+    
+    print(ts.ps.initialState.getASVPositions())
+    
+    
+    pass
+
 def main():
 
 #     parser = argparse.ArgumentParser()
@@ -147,14 +180,9 @@ def main():
     
     ts.ps.setPath(sample)
     
-    c1=ts.getCollidingStates()
-    c2=ts.getNonConvexStates()
-    c3=ts.getInvalidAreaStates()
+    vertices = test_configurations(ts, sample)
     
-    print(c1)
-    print(c2)
-    print(c3)
-    print(list(set(c1)|set(c2)|set(c3)))  
+    graph_creation(vertices, ts)
 
     return;
 
@@ -169,6 +197,7 @@ if __name__ == "__main__":
             
     import re
     import random
+    import scipy
     
     import tester
         
