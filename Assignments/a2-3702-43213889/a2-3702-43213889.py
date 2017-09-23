@@ -133,23 +133,54 @@ def NN(nodes, node):
     
     return np.argmin(dist_2)
 
-def make_edges(c1, c2):
+def make_edges(c1, c2, test):
     
-#     print(c1.getASVPositions())
-#     print(c2.getASVPositions())
+    edgeConfigs = [c1]
 
-    start = np.asanyarray(c1.getASVPositions())
-    goal = np.asarray(c2.getASVPositions())
-    
-    mid = (start + goal) / 2.
-    
+    n1 = c1
+    n2 = c2
 
-    
-    m = tester.config.ASVConfig([tuple(i) for i in mid])   
-    
-    print(m.getASVPositions())
-    
-    return
+    edgeCreated = False
+
+    j = 0
+
+    while (edgeCreated == False):
+        
+        if test.isValidStep(n1, n2):
+            
+            if n2 == c2:
+                
+                print("Already created", j)
+                edgeCreated = True
+                
+            else:
+                
+                n1 = n2
+                n2 = c2
+                
+                if test.isValidStep(n1, n2):
+                    
+                    print("Finally created", j)
+                    edgeConfigs.append(n2)
+                    edgeCreated = True          
+
+        midPt = (np.asanyarray(n1.getASVPositions()) + np.asarray(n2.getASVPositions())) / 2.
+        n1 = n2        
+        n2 = tester.config.ASVConfig([tuple(i) for i in midPt])
+        
+        if not test.hasEnoughArea(n2) or not test.isConvex(n2) \
+            or not test.fitsBounds(n2) or not test.hasCollision(n2, test.ps.getObstacles()):
+            
+                return None
+            
+        else:
+            
+            edgeConfigs.append(n2)
+        
+        j += 1   
+
+#     print(m.getASVPositions())    
+    return edgeConfigs
     
 def graph_creation(configs, ts):
     
@@ -157,7 +188,7 @@ def graph_creation(configs, ts):
     c = [c.getASVPositions()[0] for c in configs]
     c = [(float(c[0]), float(c[1])) for c in c]
     c = np.asarray(c)
-    
+    edgeConfigs = {}
 #     print(c)
 
     for i in range(len(c)):
@@ -166,11 +197,14 @@ def graph_creation(configs, ts):
         NNId = NN(c, current)    #Get nearest point
         neighbour = configs[NNId]
         
-        make_edges(configs[i], neighbour)
+        edgeConfigs[configs[i]] = make_edges(configs[i], neighbour, ts)
 #         print(current, neighbour.getASVPositions()[0])
     
-    
+
+#     print(edgeConfigs)
 #     pass
+
+    
 
 def main():
 
@@ -211,7 +245,7 @@ def main():
     ts = tester.Tester()
     ts.ps = problem
     
-    sample = asvConfig_Generator(20, problem.initialState.getASVCount())
+    sample = asvConfig_Generator(100, problem.initialState.getASVCount())
     
     ts.ps.setPath(sample)
     
