@@ -119,23 +119,58 @@ def test_configurations(ts, sample):
 #     print(c4)
 #     print(c5)
 #     print(c6)
-#      
+      
 #     print(badStates)
 #     print(goodStates)
 #     print(validConfigs) 
 
     return validConfigs 
+
+def NN(nodes, node):
+
+    dist_2 = np.sum((nodes - node)**2, axis = 1)
+    dist_2[dist_2 == 0] = 10.0  #Add a large value to self distance  
+    
+    return np.argmin(dist_2)
+
+def make_edges(c1, c2):
+    
+#     print(c1.getASVPositions())
+#     print(c2.getASVPositions())
+
+    start = np.asanyarray(c1.getASVPositions())
+    goal = np.asarray(c2.getASVPositions())
+    
+    mid = (start + goal) / 2.
+    
+
+    
+    m = tester.config.ASVConfig([tuple(i) for i in mid])   
+    
+    print(m.getASVPositions())
+    
+    return
     
 def graph_creation(configs, ts):
     
-    #Valid primitive step constraint
-    #
-    tree = []
+    # Obtain the first ASV coordinate
+    c = [c.getASVPositions()[0] for c in configs]
+    c = [(float(c[0]), float(c[1])) for c in c]
+    c = np.asarray(c)
     
-    print(ts.ps.initialState.getASVPositions())
+#     print(c)
+
+    for i in range(len(c)):
+                
+        current = c[i]
+        NNId = NN(c, current)    #Get nearest point
+        neighbour = configs[NNId]
+        
+        make_edges(configs[i], neighbour)
+#         print(current, neighbour.getASVPositions()[0])
     
     
-    pass
+#     pass
 
 def main():
 
@@ -180,7 +215,13 @@ def main():
     
     ts.ps.setPath(sample)
     
-    vertices = test_configurations(ts, sample)
+    vertices = []
+    vertices.append(ts.ps.initialState)
+    vertices.append(ts.ps.goalState)
+    
+    v = test_configurations(ts, sample)
+    
+    vertices = vertices + v
     
     graph_creation(vertices, ts)
 

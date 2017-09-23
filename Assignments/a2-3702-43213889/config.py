@@ -30,7 +30,7 @@ class ASVConfig:
             coordsList = coords.split(' ')
             coords = []
             for i in range(len(coordsList)/2):
-                coords.append(( coordsList[i*2], coordsList[(i*2)+1] ))
+                coords.append(( float(coordsList[i*2]), float(coordsList[(i*2)+1]) ))
 
         #Now that input is homogenised, we can continue
 
