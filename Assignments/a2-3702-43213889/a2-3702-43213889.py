@@ -169,7 +169,7 @@ def make_edges(c1, c2, test):
         n2 = tester.config.ASVConfig([tuple(i) for i in midPt])
         
         if not test.hasEnoughArea(n2) or not test.isConvex(n2) \
-            or not test.fitsBounds(n2) or not test.hasCollision(n2, test.ps.getObstacles()):
+            or not test.fitsBounds(n2) or test.hasCollision(n2, test.ps.getObstacles()):
             
                 return None
             
@@ -182,13 +182,13 @@ def make_edges(c1, c2, test):
 #     print(m.getASVPositions())    
     return edgeConfigs
     
-def graph_creation(configs, ts):
+def graph_creation(configs, ts, edgeConfigs):
     
     # Obtain the first ASV coordinate
     c = [c.getASVPositions()[0] for c in configs]
     c = [(float(c[0]), float(c[1])) for c in c]
     c = np.asarray(c)
-    edgeConfigs = {}
+    
 #     print(c)
 
     for i in range(len(c)):
@@ -197,14 +197,27 @@ def graph_creation(configs, ts):
         NNId = NN(c, current)    #Get nearest point
         neighbour = configs[NNId]
         
-        edgeConfigs[configs[i]] = make_edges(configs[i], neighbour, ts)
+        edge = make_edges(configs[i], neighbour, ts)
+        
+
+  
+        if configs[i] in edgeConfigs:
+
+            edgeConfigs[configs[i]].append([edge])
+          
+        else:
+          
+            edgeConfigs[configs[i]] = [edge]
+            
+            
+#             print(len(edgeConfigs[configs[i]]))
 #         print(current, neighbour.getASVPositions()[0])
     
 
 #     print(edgeConfigs)
 #     pass
 
-    
+    return edgeConfigs
 
 def main():
 
@@ -233,7 +246,7 @@ def main():
 # #     print array
 #     
 # #     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
-  
+    edgeConfigs = {}
     
     # Initialise problem file
     problem = tester.ProblemSpec.ProblemSpec()
@@ -257,7 +270,9 @@ def main():
     
     vertices = vertices + v
     
-    graph_creation(vertices, ts)
+    edgeConfigs = graph_creation(vertices, ts, edgeConfigs)
+    
+    search.AStar_Search(edgeConfigs, ts.ps.initialState, ts.ps.goalState)
 
     return;
 
@@ -274,6 +289,7 @@ if __name__ == "__main__":
     import random
     import scipy
     
+    import search
     import tester
         
     main()
