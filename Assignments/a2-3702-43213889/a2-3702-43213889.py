@@ -160,7 +160,7 @@ def make_edges(c1, c2, test):
                 
                 if test.isValidStep(n1, n2):
                     
-                    print("Finally created", j)
+#                     print("Finally created", j)
                     edgeConfigs.append(n2)
                     edgeCreated = True          
 
@@ -198,16 +198,17 @@ def graph_creation(configs, ts, edgeConfigs):
         neighbour = configs[NNId]
         
         edge = make_edges(configs[i], neighbour, ts)
+        temp = []
         
-
-  
         if configs[i] in edgeConfigs:
-
-            edgeConfigs[configs[i]].append([edge])
+            
+            temp.append(edge)
+            edgeConfigs[configs[i]].append(temp)
           
         else:
           
-            edgeConfigs[configs[i]] = [edge]
+            temp.append([edge])
+            edgeConfigs[configs[i]] = temp
             
             
 #             print(len(edgeConfigs[configs[i]]))
@@ -258,21 +259,27 @@ def main():
     ts = tester.Tester()
     ts.ps = problem
     
-    sample = asvConfig_Generator(100, problem.initialState.getASVCount())
-    
-    ts.ps.setPath(sample)
-    
     vertices = []
     vertices.append(ts.ps.initialState)
     vertices.append(ts.ps.goalState)
     
-    v = test_configurations(ts, sample)
+    for i in range(1,100):
+        
+        sample = asvConfig_Generator(100, problem.initialState.getASVCount())
+        
+        ts.ps.setPath(sample)
+            
+        v = test_configurations(ts, sample)
+        
+        vertices = vertices + v
     
-    vertices = vertices + v
+        edgeConfigs = graph_creation(vertices, ts, edgeConfigs)
     
-    edgeConfigs = graph_creation(vertices, ts, edgeConfigs)
-    
-    search.AStar_Search(edgeConfigs, ts.ps.initialState, ts.ps.goalState)
+        cost, route = search.AStar_Search(edgeConfigs, ts.ps.initialState, ts.ps.goalState)
+        
+        if (i % 2 == 0):
+            
+            print (i, cost, route)
 
     return;
 

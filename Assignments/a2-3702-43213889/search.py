@@ -7,6 +7,7 @@ Created on 24 Sep. 2017
 import Queue as Q
 
 import tester
+from scipy.sparse.csgraph import _shortest_path
 
 # def AStar_Search(graph, query):
 #     
@@ -84,53 +85,51 @@ import tester
 # 
 #     return None, None
 
+def heuristic(goal, next):
+    
+    return float(next.totalDistance(goal))
+
 def AStar_Search(edges, start, goal):
     
     frontier = Q.PriorityQueue()    
     frontier.put((0, start, edges[start]))
+    
+    currentCost = {start: 0}
+    path = {start: None}
     
     while not frontier.empty():
      
         element = frontier.get()
         cfg = element[1]
         node = element[2]
-                
-        if node != [None]:
+        
+        
+        
+        if node == [[None] * len(node)]:
+
+            print node
 
             for n in node:
-                
+   
                 if n[-1] == goal:
-                    
-                    pass
-            
+                
+                    cost = sum(currentCost.values())
+                    return cost, path
+
             adjacent = [m[-1] for m in node]
             
 #             print adjacent
             
-            for n in adjacent:
+            for next in adjacent:
                  
-                priority = cfg.totalDistance(n)
+                estimatedCost = cfg.totalDistance(next) + currentCost[cfg]
+                print(estimatedCost)
                 
-#                 print(edges[cfg][0][0].getASVPositions())
-#                 print(edges[cfg][0][-1].getASVPositions())
-#                 print(cfg.getASVPositions())
-#                 print(n.getASVPositions())
-#                 print(priority)
-            
-#             print edges[adjacent[0]]  
-            
-#         for n in adjacent:      
-#                        
-#             estimatedCost = currentCost[name] + current[next][3]         
-#             
-#             if next not in currentCost or estimatedCost < currentCost[next]:
-#                  
-#                 currentCost[next] = estimatedCost                
-#                 priority = estimatedCost                          
-#                  
-#                 frontier.put((priority, next, graph[next]))
-#                                 
-#                 seq[next] = road.Sequence(name, graph[name][next][0], seq[name])
-
+                if next not in currentCost or estimatedCost < currentCost[next]:
+                    
+                    currentCost[next] = estimatedCost                    
+                    priority = estimatedCost + heuristic(goal, next)                    
+                    frontier.put((priority, next, edges[next]))
+                    path[next] = cfg
 
     return None, None
