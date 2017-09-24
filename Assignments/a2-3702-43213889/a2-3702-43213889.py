@@ -129,7 +129,7 @@ def test_configurations(ts, sample):
 def NN(nodes, node):
 
     dist_2 = np.sum((nodes - node)**2, axis = 1)
-    dist_2[dist_2 == 0] = 10.0  #Add a large value to self distance  
+    dist_2[dist_2 == 0] = 100.0  #Add a large value to self distance  
     
     return np.argmin(dist_2)
 
@@ -198,17 +198,28 @@ def graph_creation(configs, ts, edgeConfigs):
         neighbour = configs[NNId]
         
         edge = make_edges(configs[i], neighbour, ts)
-        temp = []
         
-        if configs[i] in edgeConfigs:
+        key = (configs[i], neighbour)
+        
+        if key not in edgeConfigs and (key[1], key[0]) not in edgeConfigs:
             
-            temp.append(edge)
-            edgeConfigs[configs[i]].append(temp)
-          
-        else:
-          
-            temp.append([edge])
-            edgeConfigs[configs[i]] = temp
+#             print(key[0].getASVPositions())
+#             print(key[1].getASVPositions())
+        
+            edgeConfigs[key] = edge
+        
+#         print(edge)
+#         temp = []
+        
+#         if configs[i] in edgeConfigs:
+#             
+#             temp.append(edge)
+#             edgeConfigs[configs[i]].append(temp)
+#           
+#         else:
+#            
+#             temp.append([edge])
+#             edgeConfigs[configs[i]] = temp
             
             
 #             print(len(edgeConfigs[configs[i]]))
@@ -263,9 +274,11 @@ def main():
     vertices.append(ts.ps.initialState)
     vertices.append(ts.ps.goalState)
     
-    for i in range(1,100):
+    t1 = time.time()
+    
+    for i in range(0, 500):
         
-        sample = asvConfig_Generator(100, problem.initialState.getASVCount())
+        sample = asvConfig_Generator(50, problem.initialState.getASVCount())
         
         ts.ps.setPath(sample)
             
@@ -277,9 +290,30 @@ def main():
     
         cost, route = search.AStar_Search(edgeConfigs, ts.ps.initialState, ts.ps.goalState)
         
-        if (i % 2 == 0):
+        if cost and route:
             
+            sys.stdout.write('\nObtained Route\n')
+            break
+         
+        if (i % 20 == 0):
+              
             print (i, cost, route)
+    
+    
+    t2 = time.time()
+    sys.stdout.write('\nTime taken: ' + str( (t2 - t1) / 60.) + ' in mins\n')
+    
+    if cost and route:
+            
+        ts.ps.setPath(route)        
+        problem.saveSolution(outputFile)
+        
+    else:
+        
+        f3 = open(outputFile, "w")
+        f3.write('No solution obtained')
+        
+    sys.stdout.write('\nOutput file stored as ' + str(outputFile) + '\n')
 
     return;
 
@@ -294,7 +328,8 @@ if __name__ == "__main__":
             
     import re
     import random
-    import scipy
+    import sys
+    import time
     
     import search
     import tester

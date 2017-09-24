@@ -91,44 +91,69 @@ def heuristic(goal, next):
 
 def AStar_Search(edges, start, goal):
     
-    frontier = Q.PriorityQueue()    
-    frontier.put((0, start, edges[start]))
+    frontier = Q.PriorityQueue()
+    currentCost = {}
+    path = {}
     
-    currentCost = {start: 0}
-    path = {start: None}
-    
+    adjacent = [m[1] for m in edges.keys() if m[0] == start]
+
+    for next in adjacent:
+        
+        cfg = (start, next)
+        currentCost[cfg] = 0
+        path[cfg] = None
+        frontier.put((0, cfg, edges[cfg]))
+
     while not frontier.empty():
      
         element = frontier.get()
-        cfg = element[1]
-        node = element[2]
-        
-        
-        
-        if node == [[None] * len(node)]:
-
-            print node
-
-            for n in node:
-   
-                if n[-1] == goal:
+        cfg = element[1]    #cfg[0] is current, cfg[1] is destination config
+        node = element[2]        
                 
-                    cost = sum(currentCost.values())
-                    return cost, path
-
-            adjacent = [m[-1] for m in node]
+        if node != None:
             
-#             print adjacent
+#             print(cfg[0].getASVPositions())
+#             print(cfg[1].getASVPositions())
+            
+            if cfg[0] == goal or cfg[1] == goal:
+                
+                print("Soulution found")
+                print(path)
+                cost = sum(currentCost.values())
+                
+                route = []
+                
+                c = cfg
+                i = 0
+                while path[c] != None:
+                
+                    route.insert(0, path[c])
+                    c = path[c]
+                    i += 1
+                    print(i)                
+                
+                return cost, route
+
+            adjacent = [n for n in edges.keys() if (n[0] == cfg[1] and n[1] != cfg[0])]
+                      
             
             for next in adjacent:
-                 
-                estimatedCost = cfg.totalDistance(next) + currentCost[cfg]
-                print(estimatedCost)
                 
-                if next not in currentCost or estimatedCost < currentCost[next]:
+#                 if (next[1], next[0]) not in currentCost:
+                
+#                 print(next[0].getASVPositions())
+#                 print(next[1].getASVPositions())
+                
+                                     
+                estimatedCost = cfg[1].totalDistance(next[1]) + currentCost[cfg]
+
+                if (next not in currentCost \
+                    and (next[1], next[0])) not in currentCost \
+                    or estimatedCost < currentCost[next]:
                     
+#                     print('hello')
                     currentCost[next] = estimatedCost                    
-                    priority = estimatedCost + heuristic(goal, next)                    
+                    priority = estimatedCost + heuristic(goal, next[0])                    
                     frontier.put((priority, next, edges[next]))
                     path[next] = cfg
 
