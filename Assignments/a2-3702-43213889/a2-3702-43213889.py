@@ -177,8 +177,8 @@ def make_edges(c1, c2, test):
         n1 = n2        
         n2 = tester.config.ASVConfig([tuple(i) for i in midPt])
         
-        if not test.hasEnoughArea(n2) or not test.isConvex(n2) \
-            or not test.fitsBounds(n2) or test.hasCollision(n2, test.ps.getObstacles()):
+        if not test.hasEnoughArea(n2) and not test.isConvex(n2) \
+            and not test.fitsBounds(n2) and test.hasCollision(n2, test.ps.getObstacles()):
             
                 return None
             
@@ -200,33 +200,52 @@ def graph_creation(configs, ts, edgeConfigs):
     
 #     print(c)
 
-    for i in range(len(c)):
+    for i in range(len(configs)):
+         
+         current = configs[i]
+         
+         for j in range(len(configs)):
+             
+             if (i != j):
+             
+                 neighbour = configs[j]
+                 
+                 if not (current, neighbour) in edgeConfigs and not (neighbour, current) in edgeConfigs:
+                 
+                    if current.totalDistance(neighbour) <= ((1.+ts.MAX_BOOM_LENGTH) / current.getASVCount()):
+                      
+                        edge = make_edges(current, neighbour, ts)
+                                           
+                        if (edge != None):
+                              
+                            key = (current, neighbour)
+                            edgeConfigs[key] = edge
                 
-        current = c[i]
-        NNId = NN(c, current, 1)    #Get nearest point
-        neighbour = configs[NNId]
-        
-        if (neighbour, configs[i]) in edgeConfigs:
- 
-                #             print(key[0].getASVPositions())
-                #             print(key[1].getASVPositions())
-#                 print("2nd neigh")
-                newId = NN(c, c[NNId], 2)
-                newNeighbour = configs[newId]
-                edge = make_edges(neighbour, newNeighbour, ts)
-                key = (neighbour, newNeighbour)
-        
-        else:
-        
-            edge = make_edges(configs[i], neighbour, ts)            
-            key = (configs[i], neighbour)
-        
-        if key not in edgeConfigs and (key[1], key[0]) not in edgeConfigs:
-            
-#             print(key[0].getASVPositions())
-#             print(key[1].getASVPositions())
-        
-            edgeConfigs[key] = edge
+#         current = c[i]
+#         NNId = NN(c, current, 1)    #Get nearest point
+#         neighbour = configs[NNId]
+#         
+#         if (neighbour, configs[i]) in edgeConfigs:
+#  
+#                 #             print(key[0].getASVPositions())
+#                 #             print(key[1].getASVPositions())
+# #                 print("2nd neigh")
+#                 newId = NN(c, c[NNId], 2)
+#                 newNeighbour = configs[newId]
+#                 edge = make_edges(neighbour, newNeighbour, ts)
+#                 key = (neighbour, newNeighbour)
+#         
+#         else:
+#         
+#             edge = make_edges(configs[i], neighbour, ts)            
+#             key = (configs[i], neighbour)
+#         
+#         if key not in edgeConfigs and (key[1], key[0]) not in edgeConfigs:
+#              
+# #             print(key[0].getASVPositions())
+# #             print(key[1].getASVPositions())
+#          
+#             edgeConfigs[key] = edge
         
 #         print(edge)
 #         temp = []
@@ -298,7 +317,7 @@ def main():
     
     for i in range(0, 500):
         
-        sample = asvConfig_Generator(50, problem.initialState.getASVCount())
+        sample = asvConfig_Generator(30, problem.initialState.getASVCount())
         
         ts.ps.setPath(sample)
             
@@ -310,8 +329,9 @@ def main():
     
         cost, route = search.AStar_Search(edgeConfigs, ts.ps.initialState, ts.ps.goalState)
         
-        if cost and route:
+        if route:
             
+#             print(route)
             sys.stdout.write('\nObtained Route\n')
             break
          
@@ -321,9 +341,9 @@ def main():
     
     
     t2 = time.time()
-    sys.stdout.write('\nTime taken: ' + str( (t2 - t1) / 60.) + ' in mins\n')
+    sys.stdout.write('\nTime taken: ' + str((t2 - t1)) + '  secs\n')
     
-    if cost and route:
+    if route:
             
         ts.ps.setPath(route)        
         ts.ps.saveSolution(outputFile)

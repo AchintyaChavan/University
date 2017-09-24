@@ -117,20 +117,17 @@ def AStar_Search(edges, start, goal):
             
             if cfg[0] == goal or cfg[1] == goal:
                 
-#                 print("Soulution found")
-                print(path)
+                c = cfg
+                route = []
+                route.extend(edges[cfg])
+                                
                 cost = sum(currentCost.values())
                 
-                route = []
-                
-                c = cfg
-                i = 0
                 while path[c] != None:
                 
-                    route.insert(0, path[c])
+                    route.insert(0, edges[c])
                     c = path[c]
-                    i += 1
-                    print(i)                
+                    i += 1               
                 
                 return cost, route
 

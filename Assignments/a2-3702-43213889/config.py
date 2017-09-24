@@ -44,7 +44,8 @@ class ASVConfig:
         """
         string = ""
         for i in self.asvPositions:
-            string += str(i[0]) + " " + str(i[1]) + " "
+#             string += str(i[0]) + " " + str(i[1]) + " "
+            string += "{:.3f}".format(i[0]) + " " + "{:.3f}".format(i[1]) + " " 
         return(string)
 
     def __add__(self, coord):

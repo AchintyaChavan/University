@@ -57,11 +57,11 @@ class ProblemSpec:
             numObstacles = int(inputData[i])
             i += 1
 
+            
 #             self.obstacles = [None] * numObstacles
             for j in range(numObstacles):
                 o = config.Obstacle()
                 o.construct(inputData[i])
-
                 self.obstacles.append(o)
                 i += 1
 
@@ -125,9 +125,9 @@ class ProblemSpec:
 
         outputFile = open(filename, 'w+')
 
-        outputFile.write(str(len(self.path)) + " " + str(self.solutionCost) + '\n') #If you are on windows this will need to be \r\n but moss and unix will need \n only. \r\n will display as two line breaks
+        outputFile.write(str(len(self.path)) + " " + "{:.1f}".format(self.solutionCost) + '\n') #If you are on windows this will need to be \r\n but moss and unix will need \n only. \r\n will display as two line breaks
         for cfg in self.path:
-            outputFile.write(str(cfg.getASVPositions()) + '\n')
+            outputFile.write(cfg.__str__() + '\n')
         outputFile.close()
 
     def calculateTotalCost(self):
