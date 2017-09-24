@@ -117,7 +117,7 @@ def AStar_Search(edges, start, goal):
             
             if cfg[0] == goal or cfg[1] == goal:
                 
-                print("Soulution found")
+#                 print("Soulution found")
                 print(path)
                 cost = sum(currentCost.values())
                 

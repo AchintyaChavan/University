@@ -126,12 +126,21 @@ def test_configurations(ts, sample):
 
     return validConfigs 
 
-def NN(nodes, node):
+def NN(nodes, node, num):
 
     dist_2 = np.sum((nodes - node)**2, axis = 1)
     dist_2[dist_2 == 0] = 100.0  #Add a large value to self distance  
     
-    return np.argmin(dist_2)
+    id = np.argmin(dist_2)
+    
+    if num == 1:
+    
+        return id
+    
+    else:
+        
+        dist_2[id] = 100.0
+        return np.argmin(dist_2)
 
 def make_edges(c1, c2, test):
     
@@ -194,12 +203,23 @@ def graph_creation(configs, ts, edgeConfigs):
     for i in range(len(c)):
                 
         current = c[i]
-        NNId = NN(c, current)    #Get nearest point
+        NNId = NN(c, current, 1)    #Get nearest point
         neighbour = configs[NNId]
         
-        edge = make_edges(configs[i], neighbour, ts)
+        if (neighbour, configs[i]) in edgeConfigs:
+ 
+                #             print(key[0].getASVPositions())
+                #             print(key[1].getASVPositions())
+#                 print("2nd neigh")
+                newId = NN(c, c[NNId], 2)
+                newNeighbour = configs[newId]
+                edge = make_edges(neighbour, newNeighbour, ts)
+                key = (neighbour, newNeighbour)
         
-        key = (configs[i], neighbour)
+        else:
+        
+            edge = make_edges(configs[i], neighbour, ts)            
+            key = (configs[i], neighbour)
         
         if key not in edgeConfigs and (key[1], key[0]) not in edgeConfigs:
             
@@ -306,7 +326,7 @@ def main():
     if cost and route:
             
         ts.ps.setPath(route)        
-        problem.saveSolution(outputFile)
+        ts.ps.saveSolution(outputFile)
         
     else:
         
