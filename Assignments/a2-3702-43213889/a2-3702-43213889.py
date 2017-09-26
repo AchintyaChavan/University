@@ -18,49 +18,6 @@ def file_read(filename):
         
     return array
 
-def obstacle_config(array):
-
-    obstacles = {}
-    
-    num = int(array.pop(0))
-
-    for i in range(num):
-        
-        s = re.findall("\d+\.\d+", array[i])        
-        s = [float(i) for i in s]        
-
-#         v1 = (s[0], s[1])
-#         v2 = (s[2], s[3])
-#         v3 = (s[4], s[5])
-#         v4 = (s[6], s[7])
-
-        x = s[0]
-        y = s[1]
-        w = s[2] - s[0]
-        h = s[5] - s[1]
-        
-        obstacles[i] = config.Obstacle(x, y, w, h)
-
-    return obstacles
-
-
-def asv_config(array):
-    
-    goal = {}
-    asvs = config.ASVConfig(int(array.pop(0)),{})
-    
-    s = re.findall("\d+\.\d+", array[0])
-    g = re.findall("\d+\.\d+", array[1])
-    
-    for i in range(asvs.length):
-        
-        asvs.position[i] = (float(s[2*i]), float(s[2*i+1]))
-        goal[i] = (float(g[i]), float(g[i+1]))
-    
-    array.pop()
-    
-    return asvs, array[(asvs.length - 1):], goal
-
 def asvConfig_Generator(sampleSize, n):
     
     xs = np.array(random.sample(xrange(0,100), sampleSize)) / 100.
@@ -153,6 +110,10 @@ def make_edges(c1, c2, test):
 
     j = 0
 
+    if c1 == c2:
+        
+        return None
+
     while (edgeCreated == False):
         
         if test.isValidStep(n1, n2):
@@ -177,8 +138,8 @@ def make_edges(c1, c2, test):
         n1 = n2        
         n2 = tester.config.ASVConfig([tuple(i) for i in midPt])
         
-        if not test.hasEnoughArea(n2) and not test.isConvex(n2) \
-            and not test.fitsBounds(n2) and test.hasCollision(n2, test.ps.getObstacles()):
+        if not test.hasEnoughArea(n2) or not test.isConvex(n2) \
+            or not test.fitsBounds(n2) or test.hasCollision(n2, test.ps.getObstacles()):
             
                 return None
             
@@ -195,31 +156,66 @@ def graph_creation(configs, ts, edgeConfigs):
     
     # Obtain the first ASV coordinate
     c = [c.getASVPositions()[0] for c in configs]
-    c = [(float(c[0]), float(c[1])) for c in c]
-    c = np.asarray(c)
+    c = np.array(c)
     
+#     dist = (1.+ts.MAX_BOOM_LENGTH) * (1.* float(ts.ps.asvCount))
+    dist = ts.MAX_BOOM_LENGTH * (1.* float(ts.ps.asvCount))
 #     print(c)
+#     
+    tree = spatial.cKDTree(c)
+    
+    for i in range(len(c)):
+        
+        current = configs[i]
+#         print(i)
+#         
+#         print('\n')
+        NNIDs = tree.query_ball_point(c[i], dist)
+        
+        for j in NNIDs:
+        
+            neighbour = configs[j]
+            
+            if not (neighbour, current) in edgeConfigs or not (neighbour, current) in edgeConfigs:
+                
+                edge = make_edges(current, neighbour, ts)
+                                        
+                if (edge != None):
+                       
+                    key = (current, neighbour)
+                    edgeConfigs[key] = edge
+#                     print(len(edge))
+#                     print(current.getASVPositions())
+#                     print(neighbour.getASVPositions())
+#                     print('\n')
+        
 
-    for i in range(len(configs)):
-         
-         current = configs[i]
-         
-         for j in range(len(configs)):
-             
-             if (i != j):
-             
-                 neighbour = configs[j]
-                 
-                 if not (current, neighbour) in edgeConfigs and not (neighbour, current) in edgeConfigs:
-                 
-                    if current.totalDistance(neighbour) <= ((1.+ts.MAX_BOOM_LENGTH) / current.getASVCount()):
-                      
-                        edge = make_edges(current, neighbour, ts)
-                                           
-                        if (edge != None):
-                              
-                            key = (current, neighbour)
-                            edgeConfigs[key] = edge
+        
+
+#     for i in range(len(configs)):
+#          
+#          current = configs[i]
+# 
+#          for j in range(len(configs)):
+#              
+# #              if (i != j):
+#              
+#              neighbour = configs[j]
+#              
+#              if not (current, neighbour) in edgeConfigs and not (neighbour, current) in edgeConfigs:
+#              
+#                 if current.totalDistance(neighbour) <= ((1.+ts.MAX_BOOM_LENGTH) / (1.*current.getASVCount())):
+#                   
+#                     edge = make_edges(current, neighbour, ts)
+#                                        
+#                     if (edge != None):
+#                           
+#                         key = (current, neighbour)
+#                         edgeConfigs[key] = edge
+#                         print(len(edge))
+#                         print(current.getASVPositions())
+#                         print(neighbour.getASVPositions())
+#                         print('\n')
                 
 #         current = c[i]
 #         NNId = NN(c, current, 1)    #Get nearest point
@@ -368,6 +364,7 @@ if __name__ == "__main__":
             
     import re
     import random
+    import scipy.spatial as spatial
     import sys
     import time
     
