@@ -95,16 +95,27 @@ def AStar_Search(edges, start, goal):
     currentCost = {}
     path = {}
     
-    adjacent = [m[1] for m in edges.keys() if m[0] == start]
+    adjacent = [m[1] for m in edges.keys() if m[1] == start]
+    adjacent = adjacent + [m[0] for m in edges.keys() if m[1] == start]
+
+#     print(adjacent)
 
     for next in adjacent:
         
         cfg = (start, next)
+        
+#         print(next.getASVPositions())
+        
         currentCost[cfg] = 0
         path[cfg] = None
         frontier.put((0, cfg, edges[cfg]))
 
+#     j = 0
+
     while not frontier.empty():
+     
+#         print(j)
+#         j = j + 1
      
         element = frontier.get()
         cfg = element[1]    #cfg[0] is current, cfg[1] is destination config
