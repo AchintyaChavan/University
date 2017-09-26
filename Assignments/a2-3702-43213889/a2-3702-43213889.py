@@ -4,19 +4,8 @@ Created on 9 Sep. 2017
 @author: AC
 '''
     
-inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
-outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
-
-
-def file_read(filename):
-    
-    array = []
-    
-    with open(filename, "r") as f:
-        
-        array = f.read().split("\n")
-        
-    return array
+# inputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\\Non Repo\\COMP3701A2Support-master\\COMP3701A2Support-master\\testcases\\3ASV-easy.txt"
+# outputFile = "H:\\Documents\\Achintya\\UQ\\Engineering\\5th Year\\Sem 2 2017\\COMP3702\Assignments\\a2-3702-43213889\\3ASV-easy-output.txt"
 
 def asvConfig_Generator(sampleSize, n):
     
@@ -82,22 +71,6 @@ def test_configurations(ts, sample):
 #     print(validConfigs) 
 
     return validConfigs 
-
-def NN(nodes, node, num):
-
-    dist_2 = np.sum((nodes - node)**2, axis = 1)
-    dist_2[dist_2 == 0] = 100.0  #Add a large value to self distance  
-    
-    id = np.argmin(dist_2)
-    
-    if num == 1:
-    
-        return id
-    
-    else:
-        
-        dist_2[id] = 100.0
-        return np.argmin(dist_2)
 
 def make_edges(c1, c2, test):
     
@@ -220,13 +193,13 @@ def graph_creation(configs, ind, ts, edgeConfigs):
     c = np.array(c)
 
 #     dist = (1.+ts.MAX_BOOM_LENGTH) * (1.* float(ts.ps.asvCount))
-    dist = ts.MAX_BOOM_LENGTH * (1.* float(ts.ps.asvCount))
+    dist = ts.MAX_BOOM_LENGTH# * (3.* float(ts.ps.asvCount))
 
     tree = spatial.cKDTree(c)
-    NNIDs = tree.query_ball_point(c[0], dist)
-
+#     NNIDs = tree.query_ball_point(c[0], dist)
+    
 #     print(ind)
-    for i in range(0, len(c)):
+    for i in range(ind, len(c)):
      
         current = configs[i]
 
@@ -238,30 +211,40 @@ def graph_creation(configs, ind, ts, edgeConfigs):
         for j in NNIDs:
         
             neighbour = configs[j]
-            
-            
+                        
             if not (neighbour, current) in edgeConfigs or not (neighbour, current) in edgeConfigs:
                 
                 edge = make_edges(current, neighbour, ts)
                                         
                 if (edge != None):
                     
+                    if current == ts.ps.goalState:
+                        
+                        key = (current, neighbour)
+                        
+                    elif neighbour == ts.ps.goalState:
+                        
+                        key = (neighbour, current)
+                        
+                    else:
+                        
+                        key = (current, neighbour)
 #                     print("Edge created", i)                 
-                    key = (current, neighbour)
+#                     key = (current, neighbour)
                     edgeConfigs[key] = edge
                     
-                    if key[0] == ts.ps.initialState or key[1] == ts.ps.initialState:
-                        
-                        print("start node added")
-                        
+#                     if key[0] == ts.ps.initialState or key[1] == ts.ps.initialState:
+#                         
+#                         print("start node added")
+#                         
                     if key[0] == ts.ps.goalState or key[1] == ts.ps.goalState:
-                        
-                        print("goal node added")                        
+                         
+                        pass
+#                         print("goal node added")
 
-                    
-        if i == 2:
-             
-            i = ind
+#         if i == 2:
+#              
+#             i = ind
       
 #                     print('\n')
 #                     print(len(edge))
@@ -275,36 +258,20 @@ def graph_creation(configs, ind, ts, edgeConfigs):
 
 def main():
 
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("inputFile", help = "list of roads and info")
-#     parser.add_argument("outputFile", help = "initial and final locations")
-#     args = parser.parse_args()
-# #      
-# #     f1 = file_read(args.inputFile)
-# #     
-# #     outFile = os.path.join(os.path.realpath(__file__), args.outputFile)
-# #     
-# #     f2 = open(outFile, "w")
-#     f1 = file_read(inputFile)
-#     
-# #     print(f1)
-#     
-#     asvs, array, goal = asv_config(f1)
-#     
-# #     print(asvs)
-#         
-#     obstacles = obstacle_config(array)
-#      
-#     asvConfig_Generator(20, asvs.length)
-#     
-# #     print array
-#     
-# #     f3 = open(os.path.join(os.getcwd(), outputFile), "w")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("inputFile", help = "list of roads and info")
+    parser.add_argument("outputFile", help = "initial and final locations")
+    args = parser.parse_args()
+   
+    outputFile = os.path.join(os.getcwd(), args.outputFile)
+
+    print(outputFile)
+
     edgeConfigs = {}
     
     # Initialise problem file
     problem = tester.ProblemSpec.ProblemSpec()
-    problem.loadProblem(inputFile)
+    problem.loadProblem(args.inputFile)
 
 #     problem.saveSolution(outputFile)
     
@@ -348,11 +315,6 @@ def main():
 #             print(route)
             sys.stdout.write('\nObtained Route\n')
             break
-         
-        if (i % 20 == 0):
-              
-            print (i, cost, route)
-    
     
     t2 = time.time()
     sys.stdout.write('\nTime taken: ' + str((t2 - t1)) + '  secs\n')

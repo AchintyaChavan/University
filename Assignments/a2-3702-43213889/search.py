@@ -95,14 +95,11 @@ def AStar_Search(edges, start, goal):
     currentCost = {}
     path = {}
     
-    adjacent = [m[1] for m in edges.keys() if m[1] == start]
-    adjacent = adjacent + [m[0] for m in edges.keys() if m[1] == start]
+    initial = [m[1] for m in edges.keys() if m[0] == goal]
 
-#     print(adjacent)
-
-    for next in adjacent:
+    for next in initial:
         
-        cfg = (start, next)
+        cfg = (goal, next)
         
 #         print(next.getASVPositions())
         
@@ -126,8 +123,10 @@ def AStar_Search(edges, start, goal):
 #             print(cfg[0].getASVPositions())
 #             print(cfg[1].getASVPositions())
             
-            if cfg[0] == goal or cfg[1] == goal:
+            if cfg[0].totalDistance(start) <= (0.5 * 2.) \
+               or cfg[1].totalDistance(start) <= (0.5 * 2.):
                 
+                print("Solution reached")
                 c = cfg
                 route = []
                 route.extend(edges[cfg])
@@ -165,4 +164,5 @@ def AStar_Search(edges, start, goal):
                     frontier.put((priority, next, edges[next]))
                     path[next] = cfg
 
+#     print("nothing")
     return None, None
