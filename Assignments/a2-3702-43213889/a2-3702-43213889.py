@@ -339,8 +339,8 @@ if __name__ == "__main__":
     import numpy as np
     import os
 
-#     import pip          
-#     pip.main(['install', os.path.join(os.getcwd(), "Shapely-1.5.17-cp27-none-win32.whl")])
+    import pip          
+    pip.main(['install', os.path.join(os.getcwd(), "Shapely-1.5.17-cp27-none-win32.whl")])
             
     import re
     import random
