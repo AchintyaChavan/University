@@ -8,9 +8,12 @@ import MDP
 
 def main():
     
-    R0 = (0,0)
+    R0 = (0, 0)
+    Discount = 0.95
+    N = 2
     
-    MDP.test()
+    MDP.mdp_value_interation(N, R0, Discount)
+#     MDP.test()
     
     return 0
 
