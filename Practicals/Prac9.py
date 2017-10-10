@@ -12,8 +12,10 @@ def main():
     Discount = 0.95
     N = 2
     
-    MDP.mdp_value_interation(N, R0, Discount)
-#     MDP.test()
+    V, action = MDP.mdp_value_interation(N, R0, Discount)
+    
+    print("Optimal Action for " + str(R0) + ": " + str(action[R0]))
+    print("Total reward: " + str(V[R0]))
     
     return 0
 

@@ -88,7 +88,7 @@ def T(c, s, d, t, cs, ss):
         
     elif cs == 0:
         
-        Tc = sum([P_c[c + d][i] for i in range(c + d, 5)])
+        Tc = sum([P_c[c + d][i] for i in range(c + d, 4)])
     
     else:
         
@@ -101,13 +101,13 @@ def T(c, s, d, t, cs, ss):
         
     elif ss == 0:
         
-        Ts = sum([P_s[s + t][j] for j in range(s + t, 5)])
+        Ts = sum([P_s[s + t][j] for j in range(s + t, 4)])
     
     else:
         
         Ts = P_s[s + t][s + t - ss]
     
-    return (Tc / 1.) * (Ts / 1.)
+    return Tc * 1. * Ts
 
 def valid_actions(state):
 
@@ -127,54 +127,43 @@ def valid_actions(state):
 
 def mdp_value_interation(N, S0, Discount):
     
-    V = [0]
-    (c, s) = S0 
-    actions = valid_actions(S0)
+    V = {key: 0 for key in stateSpace}
+    future  = {key: 0 for key in stateSpace}
+    optimalAction = {key: key for key in stateSpace}
+ 
+    for i in range(0, N):
         
-    immediate = []
-    expected = []
-    
-#     immediate = np.zeros(shape=(1,1), dtype = np.float)
-#     expected = np.zeros(shape=(1,1))
-    
-    for i in range(len(actions)):
+        for S in stateSpace:
         
-        (d, t) = actions[i]
-        
-        transArray = np.array([T(c, s, d, t, S[0], S[1]) for S in stateSpace])
-        
-        immediate.append(R(c, s, d, t))
-        expected.append(transArray)
-      
-    immediate = np.array(immediate)
-    
-#     print(expected)
-#     print(immediate)
-    
-    for s in range(0, N):
-    
-#         expected = Discount * np.sum(transArray * V[s])
+            (c, s) = S
+            actions = valid_actions(S)
+#             immediate = []
+            total = []
+            
+            
+            for a in actions:
+                
+                (d, t) = a
+#                 immediate.append(R(c, s, d, t))
+                expected = 0                
+                
+#                 print(V[S0], R(c, s, d, t))
+                
+                for Sdash in stateSpace:
+                                        
+                    (sdash, cdash) = Sdash
+                    
+                    expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
+                
+#                 print(expected, S)   
+                total.append(R(c, s, d, t) + expected)
+#                 future[S] = expected
+                
+            id = np.argmax(np.array(total), axis = 0)
+            optimalAction[S] = actions[id]
+            V[S] = total[id]
 
-#         total = immediate + expected
-        
-#         print(np.sum([e*V[s] for e in expected]))
-#         print e
-        
-        total = immediate + Discount * np.array([np.sum(e*V[s]) for e in expected])
-        
-#         print(total)
-        
-        id = np.argmax(total, axis = 0)
-        
-        print(immediate[id], np.sum(expected[id] * V[s]))
-        print(id, actions[id], total[id])
-        
-        V.append(immediate[id] + expected)
-#         for i in range(len(actions)):
-#             
-#             (d, t) = actions[i]
-#                            
-#             expected = sum( [T(c, s, d, t, ) * ] )
-#         V[s] = R()
-#     print(V)
-    return
+#     print(V[S0], future[S0], V[S0]-future[S0])
+#     print(optimalAction[S0])
+
+    return V, optimalAction
