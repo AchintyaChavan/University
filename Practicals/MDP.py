@@ -5,6 +5,7 @@ Created on 9 Oct. 2017
 '''
 
 import numpy as np
+import copy
 
 stateSpace = [(0, 0),
               (0, 1),
@@ -92,6 +93,7 @@ def T(c, s, d, t, cs, ss):
     
     else:
         
+#         print(c, d, cs)
         Tc = P_c[c + d][c + d - cs]
         
     #sc            
@@ -125,6 +127,9 @@ def valid_actions(state):
         
     return actions
 
+'''
+Value Iteration: Complexity O = (t * a * s^2)
+'''
 def mdp_value_interation(N, S0, Discount):
     
     V = {key: 0 for key in stateSpace}
@@ -137,17 +142,12 @@ def mdp_value_interation(N, S0, Discount):
         
             (c, s) = S
             actions = valid_actions(S)
-#             immediate = []
             total = []
-            
-            
+                        
             for a in actions:
                 
                 (d, t) = a
-#                 immediate.append(R(c, s, d, t))
                 expected = 0                
-                
-#                 print(V[S0], R(c, s, d, t))
                 
                 for Sdash in stateSpace:
                                         
@@ -167,3 +167,76 @@ def mdp_value_interation(N, S0, Discount):
 #     print(optimalAction[S0])
 
     return V, optimalAction
+
+
+'''
+Policy Iteration: Complexity O = (t * a * s^2)
+'''
+def mdp_policy_interation(N, S0, Discount):
+    
+    V = {key: 0 for key in stateSpace}
+    QpiDash = {}    
+    
+    policy = copy.deepcopy(V)
+    
+    # Generate a random policy but making sure it is a legal action
+    for key in policy.keys():
+        
+        a = valid_actions(key)
+        policy[key] = a[np.random.randint(len(a))]
+    
+
+    print("Initial policy for " + str(S0) + ": " + str(policy[S0]))
+
+    breakLoop = False
+    
+    for i in range(0, N):
+        
+        for S in stateSpace:
+            
+            (c, s) = S
+            (d, t) = policy[S]
+            V[S] = R(c, s, d, t) + Discount * 1. * np.sum(np.array(
+                                    [T(c, s, d, t, Sdash[0], Sdash[1]) * V[Sdash] 
+                                    for Sdash in stateSpace]))
+        
+        for S in stateSpace:
+            
+            Qpi = V[S]
+            (c, s) = S            
+            actions = valid_actions(S)
+            total = []
+            
+            for a in actions:
+                
+                (d, t) = a
+                expected = 0 
+                
+                for Sdash in stateSpace:
+                                        
+                    (sdash, cdash) = Sdash
+                    
+                    expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
+                    
+                total.append(R(c, s, d, t) + expected)   
+            
+            id = np.argmax(np.array(total), axis = 0)
+            QpiDash[S] = total[id]   #Total reward of maximised action
+            
+            #Check for convergence: pi
+            if policy[S] == actions[id] and S == S0:
+
+                print("Policy converged to optimal policy")
+                breakLoop = True
+                break
+                        
+            elif QpiDash[S] > Qpi:
+                
+                policy[S] = actions[id]
+                Qpi = QpiDash[S]
+        
+        if breakLoop:
+            
+            break
+    
+    return QpiDash, policy

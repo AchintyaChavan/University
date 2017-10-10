@@ -8,11 +8,14 @@ import MDP
 
 def main():
     
-    R0 = (0, 0)
+    R0 = (1, 0)
     Discount = 0.95
     N = 2
     
-    V, action = MDP.mdp_value_interation(N, R0, Discount)
+#     V, action = MDP.mdp_value_interation(N, R0, Discount)
+    
+    V, action = MDP.mdp_policy_interation(N, R0, Discount)
+
     
     print("Optimal Action for " + str(R0) + ": " + str(action[R0]))
     print("Total reward: " + str(V[R0]))
