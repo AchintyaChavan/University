@@ -7,35 +7,33 @@ Created on 9 Oct. 2017
 import numpy as np
 import copy
 
-stateSpace = [(0, 0),
-              (0, 1),
-              (0, 2),
-              (0, 3),
-              (0, 4),
-              (1, 0),
-              (1, 1),          
-              (1, 2),
-              (1, 3),
-              (2, 0),
-              (2, 1),
-              (2, 2),
-              (3, 0),
-              (3, 1),
-              (4, 0)]
+class VenctureConfig:    
+    
+    def __init__(self):
+        
+        self.type = None
+        self.total = 0     #Total reserved funding
+        self.extra = 0     #Additional funding
+        self.timestamps = 0
+        self.ventures = 0  #No of ventures owned
+        self.discount = 0  #Discount factor
+        self.price = {}    #Price of products manufactured by ventures
+        self.cost = {}     #Manufacturing cost of ventures
+        self.states = None #State Space
+        self.matrices = {} #Probability Matrices
 
 
-P_c = 1/10. * np.array([[3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],                                   
-                        [3, 2, 2, 1, 2]])
+    def __str__(self):
+        """
+            Enables using str(asvConfig) to return the space-separated string
 
-P_s = 1/10. * np.array([[2, 2, 2, 2, 2],
-                        [3, 2, 2, 1, 3],
-                        [3, 2, 2, 1, 3],
-                        [3, 2, 2, 1, 3],                                   
-                        [3, 2, 2, 1, 3]])
+            @return a space-separated string x y x y for all asv units
+        """
+               
 
+        return([self.type, self.total, self.extra, self.discount, 
+                self.timestamps, self.ventures, self.price, self.cost,
+                self.states, self.matrices])
 
 def test():
     
