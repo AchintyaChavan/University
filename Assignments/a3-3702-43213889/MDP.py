@@ -4,51 +4,7 @@ Created on 9 Oct. 2017
 @author: AC
 '''
 
-import numpy as np
 import copy
-
-class VenctureConfig:    
-    
-    def __init__(self):
-        
-        self.type = None
-        self.total = 0     #Total reserved funding
-        self.extra = 0     #Additional funding
-        self.timestamps = 0
-        self.ventures = 0  #No of ventures owned
-        self.discount = 0  #Discount factor
-        self.price = {}    #Price of products manufactured by ventures
-        self.cost = {}     #Manufacturing cost of ventures
-        self.states = None #State Space
-        self.matrices = {} #Probability Matrices
-
-
-    def __str__(self):
-        """
-            Enables using str(asvConfig) to return the space-separated string
-
-            @return a space-separated string x y x y for all asv units
-        """
-               
-
-        return([self.type, self.total, self.extra, self.discount, 
-                self.timestamps, self.ventures, self.price, self.cost,
-                self.states, self.matrices])
-
-def test():
-    
-#     print(np.sum(range(1,4) * 4))
-#     print(np.asarray([x for x in range(0,3)]))
-
-#     print(P_s.shape)
-#     print(P_s[0][3])
-#     print(sum([P_c[2][i] for i in range(2, 4)]))
-
-#     print(valid_actions((2, 2)))
-    
-
-    
-    pass
 
 # Reward Function
 def R(c, s, d, t):

@@ -4,47 +4,48 @@ Created on 18 Oct. 2017
 @author: AC
 '''
 
-import numpy as np
+# import numpy as np
 import os
+import ProblemSpec as PS
 import MDP
 
 constraints = {'bronze': [3, 3], 'silver': [5, 4],
                'gold': [6, 4], 'platinum': [8, 5]}
 
-stateSpace = {}
-stateSpace['bronze'] = [(0,0),
-                        (0,1),
-                        (0,2),
-                        (0,3),
-                        (1,0),
-                        (1,1),
-                        (1,2),
-                        (2,0),
-                        (2,1),             
-                        (3,0)]
-
-stateSpace['silver'] = [(0,0),
-                        (0,1),
-                        (0,2),
-                        (0,3),
-                        (1,0),
-                        (1,1),
-                        (1,2),
-                        (2,0),
-                        (2,1),             
-                        (3,0)]
-
-P_c = 1/10. * np.array([[3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],
-                        [3, 2, 2, 1, 2],                                   
-                        [3, 2, 2, 1, 2]])
-
-P_s = 1/10. * np.array([[2, 2, 2, 2, 2],
-                        [3, 2, 2, 1, 3],
-                        [3, 2, 2, 1, 3],
-                        [3, 2, 2, 1, 3],                                   
-                        [3, 2, 2, 1, 3]])
+# stateSpace = {}
+# stateSpace['bronze'] = [(0,0),
+#                         (0,1),
+#                         (0,2),
+#                         (0,3),
+#                         (1,0),
+#                         (1,1),
+#                         (1,2),
+#                         (2,0),
+#                         (2,1),             
+#                         (3,0)]
+# 
+# stateSpace['silver'] = [(0,0),
+#                         (0,1),
+#                         (0,2),
+#                         (0,3),
+#                         (1,0),
+#                         (1,1),
+#                         (1,2),
+#                         (2,0),
+#                         (2,1),             
+#                         (3,0)]
+# 
+# P_c = 1/10. * np.array([[3, 2, 2, 1, 2],
+#                         [3, 2, 2, 1, 2],
+#                         [3, 2, 2, 1, 2],
+#                         [3, 2, 2, 1, 2],                                   
+#                         [3, 2, 2, 1, 2]])
+# 
+# P_s = 1/10. * np.array([[2, 2, 2, 2, 2],
+#                         [3, 2, 2, 1, 3],
+#                         [3, 2, 2, 1, 3],
+#                         [3, 2, 2, 1, 3],                                   
+#                         [3, 2, 2, 1, 3]])
 
 
 inputfile = "bronze1.txt"
@@ -98,7 +99,12 @@ def main():
 
     filename = os.path.join(os.getcwd(), inputfile)
     
-    cfg = file_read(filename)
+#     cfg = file_read(filename)
+
+    problem = PS.ProblemSpec()
+    problem.loadInputFile(filename)
+
+#     print(problem.venture.__str__())
 
     return 0
 
