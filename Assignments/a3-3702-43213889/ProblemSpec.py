@@ -5,30 +5,7 @@ Created on 23 Oct. 2017
 '''
 
 import numpy as np
-
-stateSpace = {}
-stateSpace['bronze'] = [(0,0),
-                        (0,1),
-                        (0,2),
-                        (0,3),
-                        (1,0),
-                        (1,1),
-                        (1,2),
-                        (2,0),
-                        (2,1),             
-                        (3,0)]
-
-stateSpace['silver'] = [(0,0),
-                        (0,1),
-                        (0,2),
-                        (0,3),
-                        (1,0),
-                        (1,1),
-                        (1,2),
-                        (2,0),
-                        (2,1),             
-                        (3,0)]
-
+import itertools
 
 class ProblemSpec:    
     
@@ -41,7 +18,7 @@ class ProblemSpec:
         self.probabilities = {}             #Probability Matrices
         self.salePrices = {}                #Price of products manufactured by ventures
         self.initialFunds = {}              #Manufacturing cost of ventures
-        self.stateSpace = None              #Possible states of funding
+        self.stateSpace = []              #Possible states of funding
 
     """
      * Loads the stochastic model from file
@@ -65,7 +42,7 @@ class ProblemSpec:
             self.venture.constructor(array[0])
             self.discount = float(array[1])
             self.fortnights = int(array[2])
-            self.stateSpace = stateSpace[self.venture.getName()]
+#             self.stateSpace = stateSpace[self.venture.getName()]
             
             arr3 = array[3].split(' ')
             arr4 = array[4].split(' ')
@@ -83,10 +60,13 @@ class ProblemSpec:
                 
                 for k in range(self.venture.getManufacturingFunds() + 1):
                     
+#                     print([r for r in array[lineNo + k].split(' ')])
+                    
                     row = [float(r) for r in array[lineNo + k].split(' ')]
                     mat.append(row)
             
                 self.probabilities[j + 1] = np.array(mat)
+#                 print(self.probabilities[j+1])
                 
                 lineNo = lineNo + k
     
@@ -102,6 +82,27 @@ class ProblemSpec:
             print("Input file not found")
             raise IOError("Input file not found")
 
+    """
+     * Generates the entire state space for the given venture
+     """
+    def generate_stateSpace(self):
+        
+        array = np.array([i for i in range(self.venture.getManufacturingFunds() + 2)])
+        array = np.repeat(array, self.venture.getNumVentures(), axis = 0)
+        
+        explored = set()
+    
+        for subset in itertools.permutations(array, self.venture.getNumVentures()):
+          
+            if sum(subset) <= self.venture.getManufacturingFunds() and subset not in explored:
+            
+                explored.add(tuple(subset))
+                self.stateSpace.append(tuple(subset))
+                
+    """
+     * Enables using str() to return the space-separated string
+     *  @return a space-separated string of fortnights and discount
+    """ 
     def __str__(self):
         
         string = ""        

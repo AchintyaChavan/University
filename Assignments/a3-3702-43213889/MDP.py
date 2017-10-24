@@ -5,122 +5,232 @@ Created on 9 Oct. 2017
 '''
 
 import copy
+import ProblemSpec as PS
 
-# Reward Function
-def R(c, s, d, t):
+"""
+ * Immediate Reward function R(s, a)
+ * @param state s, action a, max value M, Probability matrix P
+ * @returns the immediate reward at (s, a)
+ """
+def R(s, a, M, P):
     
-    pc = 0
-    lc = 0
+    FSale = 0
+    FPen = 0
     
-    ps = 0
-    ls = 0
-    
-    for i in range(1, 5):
-    
-        pc +=  np.min([i, c + d]) * P_c[c + d][i]
-        ps +=  np.min([i, s + t]) * P_s[s + t][i]
+    for i in range(1, M + 1):
         
-    for j in range(c + d + 1, 5):
+        FSale += PS.np.min([i, s + a]) * P[s + a][i]
         
-        lc += (j - c - d) * P_c[c + d][j]
         
-    for k in range(s + t + 1, 5):
+    for j in range(s + a + 1, M + 1):
         
-        ls += (k - s - t) * P_s[s + t][k]
+        FPen += (j - s - a) * P[s + a][j]
     
-    return np.float(pc - 0.5 * lc) + np.float(ps - 0.5 * ls)
+#     for i in range(1, 5):
+#     
+#         pc +=  np.min([i, c + d]) * P_c[c + d][i]
+#         ps +=  np.min([i, s + t]) * P_s[s + t][i]
+#         
+#     for j in range(c + d + 1, 5):
+#         
+#         lc += (j - c - d) * P_c[c + d][j]
+#         
+#     for k in range(s + t + 1, 5):
+#         
+#         ls += (k - s - t) * P_s[s + t][k]
+    
+    return PS.np.float(0.6 * FSale - 0.25 * FPen)
 
-# Transition Function
-def T(c, s, d, t, cs, ss):
+"""
+ * Transition function R(s, a, s')
+ * @param state s, action a, max value M, Probability matrix P
+ * @returns the immediate reward at (s, a)
+ """
+def T(s, a, sdash, M, P):
+    
+    T = 0
+    
+    if sdash > (s + a):
+        
+        T = 0
+        
+    elif sdash == 0:
+        
+        T = sum([P[s + a][i] for i in range(s + a, M)])
+        
+    else:
+        
+        T = P[s + a][s + a - sdash]
+        
+
     
 #     Tc = 0
 #     Ts = 0
     
     #Tc
-    if cs > (c + d):
-        
-        Tc = 0
-        
-    elif cs == 0:
-        
-        Tc = sum([P_c[c + d][i] for i in range(c + d, 4)])
-    
-    else:
-        
-#         print(c, d, cs)
-        Tc = P_c[c + d][c + d - cs]
+#     if cs > (c + d):
+#         
+#         Tc = 0
+#         
+#     elif cs == 0:
+#         
+#         Tc = sum([P_c[c + d][i] for i in range(c + d, 4)])
+#     
+#     else:
+#         
+# #         print(c, d, cs)
+#         Tc = P_c[c + d][c + d - cs]
         
     #sc            
-    if ss > (s + t):
-        
-        Ts = 0
-        
-    elif ss == 0:
-        
-        Ts = sum([P_s[s + t][j] for j in range(s + t, 4)])
+#     if ss > (s + t):
+#         
+#         Ts = 0
+#         
+#     elif ss == 0:
+#         
+#         Ts = sum([P_s[s + t][j] for j in range(s + t, 4)])
+#     
+#     else:
+#         
+#         Ts = P_s[s + t][s + t - ss]
     
-    else:
-        
-        Ts = P_s[s + t][s + t - ss]
-    
-    return Tc * 1. * Ts
+#     return Tc * 1. * Ts
 
-def valid_actions(state):
+    return T
 
-    (c, s) = state
+"""
+ * Returns all actions that a state can legally transition from
+ * @param state, number of ventures, maximum threshold M, excess funding E
+ * @returns the immediate reward at (s, a)
+ """
+def valid_actions(state, numVentures, M, E):
 
     actions = []
-
-    for d in range(0, 4):
+    
+    if numVentures == 2:
+    
+        (s1, s2) = state
+    
+        for a1 in range(0, M):
+            
+            for a2 in range(0, M - a1):
+            
+                if (s1 + s2 + a1 + a2) <= M and (a1 + a2) <= E:
+                    
+                    actions.append(tuple((a1, a2)))
+                    
+    elif numVentures == 3:
         
-        for t in range(0, 4 - d):
-        
-            if (c + d + s + t) <= 4:
+        (s1, s2, s3) = state
+    
+        for a1 in range(0, M):
+            
+            for a2 in range(0, M - a1):
                 
-                actions.append(tuple((d, t)))
+                for a3 in range(0, M - a1 - a2):
+            
+                    if (s1 + s2 + a1 + a2) <= M and (a1 + a2 + a3) <= E:
+                        
+                        actions.append(tuple((a1, a2, a3)))
         
     return actions
 
-'''
-Value Iteration: Complexity O = (t * a * s^2)
-'''
-def mdp_value_interation(N, S0, Discount):
+"""
+ * Computes the mdp using value iteration
+ * @param problem spec config, epsilon - convergence threshold, initial state - S0
+ * @returns the immediate reward at (s, a)
+ """
+def mdp_value_iteration(problem, epsilon, S0):
     
-    V = {key: 0 for key in stateSpace}
-    future  = {key: 0 for key in stateSpace}
-    optimalAction = {key: key for key in stateSpace}
- 
-    for i in range(0, N):
+    V = {key: 0 for key in problem.stateSpace}
+    optimalAction = {key: key for key in problem.stateSpace}
+    
+    N = problem.venture.getNumVentures()
+    M = problem.venture.getManufacturingFunds()
+    E = problem.venture.getAdditionalFunds()
+    Gamma = problem.getDiscountFactor()
+    Prices = problem.getSalePrices()
+    
+    Vprev = 5 * epsilon
+    counter = 0
+    
+    while PS.np.abs(V[S0] - Vprev) > epsilon:
         
-        for S in stateSpace:
+        temp = V[S0]
         
-            (c, s) = S
-            actions = valid_actions(S)
+        for S in problem.getStateSpace():
+            
+            actions = valid_actions(S, N, M, E)
             total = []
-                        
-            for a in actions:
+            
+            for A in actions:
                 
-                (d, t) = a
-                expected = 0                
+                immediate = 0
+                expected = 0
                 
-                for Sdash in stateSpace:
-                                        
-                    (sdash, cdash) = Sdash
+                for Sdash in problem.getStateSpace():
                     
-                    expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
+                    expected += Gamma * sum([T(S[i], A[i], Sdash[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+                    
+                immediate = sum([R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
                 
-#                 print(expected, S)   
-                total.append(R(c, s, d, t) + expected)
-#                 future[S] = expected
+                total.append(immediate + expected)
                 
-            id = np.argmax(np.array(total), axis = 0)
+            id = PS.np.argmax(PS.np.array(total), axis = 0)
             optimalAction[S] = actions[id]
             V[S] = total[id]
+        
+        
+        Vprev = temp
+        
+        counter = counter + 1
+        print(V[S0], Vprev, counter)
+#     print(S0, type(S0))
+    print(counter)
+    print(optimalAction[S0], V[S0])
+    
+    return V[S0], optimalAction[S0]
 
-#     print(V[S0], future[S0], V[S0]-future[S0])
-#     print(optimalAction[S0])
-
-    return V, optimalAction
+'''
+# Value Iteration: Complexity O = (t * a * s^2)
+# '''
+# def mdp_value_interation(N, S0, Discount):
+#     
+#     V = {key: 0 for key in stateSpace}
+#     future  = {key: 0 for key in stateSpace}
+#     optimalAction = {key: key for key in stateSpace}
+#  
+#     for i in range(0, N):
+#         
+#         for S in stateSpace:
+#         
+#             (c, s) = S
+#             actions = valid_actions(S)
+#             total = []
+#                         
+#             for a in actions:
+#                 
+#                 (d, t) = a
+#                 expected = 0                
+#                 
+#                 for Sdash in stateSpace:
+#                                         
+#                     (sdash, cdash) = Sdash
+#                     
+#                     expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
+#                 
+# #                 print(expected, S)   
+#                 total.append(R(c, s, d, t) + expected)
+# #                 future[S] = expected
+#                 
+#             id = np.argmax(np.array(total), axis = 0)
+#             optimalAction[S] = actions[id]
+#             V[S] = total[id]
+# 
+# #     print(V[S0], future[S0], V[S0]-future[S0])
+# #     print(optimalAction[S0])
+# 
+#     return V, optimalAction
 
 
 '''
