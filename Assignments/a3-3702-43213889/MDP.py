@@ -129,7 +129,7 @@ def valid_actions(state, numVentures, M, E):
                 
                 for a3 in range(0, M - a1 - a2):
             
-                    if (s1 + s2 + a1 + a2) <= M and (a1 + a2 + a3) <= E:
+                    if (s1 + s2 + s3 + a1 + a2 + a3) <= M and (a1 + a2 + a3) <= E:
                         
                         actions.append(tuple((a1, a2, a3)))
         
@@ -156,7 +156,7 @@ def mdp_value_iteration(problem, epsilon, S0):
     
     while PS.np.abs(V[S0] - Vprev) > epsilon:
         
-        temp = V[S0]
+        Vprev = V[S0]
         
         for S in problem.getStateSpace():
             
@@ -170,22 +170,22 @@ def mdp_value_iteration(problem, epsilon, S0):
                 
                 for Sdash in problem.getStateSpace():
                     
-                    expected += Gamma * sum([T(S[i], A[i], Sdash[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+                    expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                                 problem.probabilities[i + 1]) for i in range(0, N)])
                     
-                immediate = sum([R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+                immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
                 
                 total.append(immediate + expected)
-                
+             
+#             print(total)    
             id = PS.np.argmax(PS.np.array(total), axis = 0)
             optimalAction[S] = actions[id]
             V[S] = total[id]
-        
-        
-        Vprev = temp
-        
+             
         counter = counter + 1
-        print(V[S0], Vprev, counter)
-#     print(S0, type(S0))
+#         print(counter, Vprev)
+#         print(V)
+
     print(counter)
     print(optimalAction[S0], V[S0])
     
@@ -233,74 +233,171 @@ def mdp_value_iteration(problem, epsilon, S0):
 #     return V, optimalAction
 
 
-'''
-Policy Iteration: Complexity O = (t * a * s^2)
-'''
-def mdp_policy_interation(N, S0, Discount):
+"""
+ * Computes the mdp using policy iteration
+ * @param problem spec config, epsilon - convergence threshold, initial state - S0
+ * @returns the immediate reward at (s, a)
+ """
+def mdp_policy_iteration(problem, epsilon, S0):
     
-    V = {key: 0 for key in stateSpace}
-    QpiDash = {}    
+    V = {key: 0 for key in problem.stateSpace}
+    optimalAction = {}
+    Qpidash = {}
     
+    N = problem.venture.getNumVentures()
+    M = problem.venture.getManufacturingFunds()
+    E = problem.venture.getAdditionalFunds()
+    Gamma = problem.getDiscountFactor()
+    Prices = problem.getSalePrices()
+  
     policy = copy.deepcopy(V)
-    
+     
     # Generate a random policy but making sure it is a legal action
     for key in policy.keys():
+         
+        action = valid_actions(key, N, M, E)
+        policy[key] = action[PS.np.random.randint(len(action))]
         
-        a = valid_actions(key)
-        policy[key] = a[np.random.randint(len(a))]
-    
-
-    print("Initial policy for " + str(S0) + ": " + str(policy[S0]))
-
     breakLoop = False
+    Vprev = 5 * epsilon
+    counter = 0
     
-    for i in range(0, N):
-        
-        for S in stateSpace:
-            
-            (c, s) = S
-            (d, t) = policy[S]
-            V[S] = R(c, s, d, t) + Discount * 1. * np.sum(np.array(
-                                    [T(c, s, d, t, Sdash[0], Sdash[1]) * V[Sdash] 
-                                    for Sdash in stateSpace]))
-        
-        for S in stateSpace:
-            
-            Qpi = V[S]
-            (c, s) = S            
-            actions = valid_actions(S)
-            total = []
-            
-            for a in actions:
-                
-                (d, t) = a
-                expected = 0 
-                
-                for Sdash in stateSpace:
-                                        
-                    (sdash, cdash) = Sdash
-                    
-                    expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
-                    
-                total.append(R(c, s, d, t) + expected)   
-            
-            id = np.argmax(np.array(total), axis = 0)
-            QpiDash[S] = total[id]   #Total reward of maximised action
-            
-            #Check for convergence: pi
-            if policy[S] == actions[id] and S == S0:
+    while PS.np.abs(V[S0] - Vprev) > epsilon:
 
+        Vprev = V[S0]
+        
+        #Estimate Policy Value
+        for S in problem.getStateSpace():
+            
+            expected = 0
+            A = policy[S]
+            
+            for Sdash in problem.getStateSpace():
+                    
+                expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                        problem.probabilities[i + 1]) for i in range(0, N)])
+            
+            immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+            
+            V[S] = expected + immediate
+
+        #Improve Policy
+        for S in problem.getStateSpace():
+                
+            actions = valid_actions(S, N, M, E)
+            total = []
+            Qpi = V[S]
+            
+            for A in actions:
+                
+                immediate = 0
+                expected = 0
+                
+                for Sdash in problem.getStateSpace():
+                    
+                    expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                                 problem.probabilities[i + 1]) for i in range(0, N)])
+                    
+                immediate += sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+                
+                total.append(immediate + expected)
+             
+#             print(total)    
+            id = PS.np.argmax(PS.np.array(total), axis = 0)
+
+            Qpidash[S] = total[id]
+            V[S] = Qpidash[S]
+            
+            #Update Policy
+            if policy[S] == actions[id] and S == S0:
+ 
                 print("Policy converged to optimal policy")
                 breakLoop = True
                 break
-                        
-            elif QpiDash[S] > Qpi:
-                
+                         
+            elif Qpidash[S] > Qpi:
+                 
                 policy[S] = actions[id]
-                Qpi = QpiDash[S]
-        
+                Qpi = Qpidash[S]
+                
         if breakLoop:
-            
+             
             break
+        
+        counter = counter + 1
+        
+    print(counter)     
     
-    return QpiDash, policy
+    print(Qpidash[S0], policy[S0])            
+    return Qpidash[S0], policy[S0]
+# '''
+# Policy Iteration: Complexity O = (t * a * s^2)
+# '''
+# def mdp_policy_interation(N, S0, Discount):
+#     
+#     V = {key: 0 for key in stateSpace}
+#     QpiDash = {}    
+#     
+#     policy = copy.deepcopy(V)
+#     
+#     # Generate a random policy but making sure it is a legal action
+#     for key in policy.keys():
+#         
+#         a = valid_actions(key)
+#         policy[key] = a[np.random.randint(len(a))]
+#     
+# 
+#     print("Initial policy for " + str(S0) + ": " + str(policy[S0]))
+# 
+#     breakLoop = False
+#     
+#     for i in range(0, N):
+#         
+#         for S in stateSpace:
+#             
+#             (c, s) = S
+#             (d, t) = policy[S]
+#             V[S] = R(c, s, d, t) + Discount * 1. * np.sum(np.array(
+#                                     [T(c, s, d, t, Sdash[0], Sdash[1]) * V[Sdash] 
+#                                     for Sdash in stateSpace]))
+#         
+#         for S in stateSpace:
+#             
+#             Qpi = V[S]
+#             (c, s) = S            
+#             actions = valid_actions(S)
+#             total = []
+#             
+#             for a in actions:
+#                 
+#                 (d, t) = a
+#                 expected = 0 
+#                 
+#                 for Sdash in stateSpace:
+#                                         
+#                     (sdash, cdash) = Sdash
+#                     
+#                     expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
+#                     
+#                 total.append(R(c, s, d, t) + expected)   
+#             
+#             id = np.argmax(np.array(total), axis = 0)
+#             QpiDash[S] = total[id]   #Total reward of maximised action
+#             
+#             #Check for convergence: pi
+#             if policy[S] == actions[id] and S == S0:
+# 
+#                 print("Policy converged to optimal policy")
+#                 breakLoop = True
+#                 break
+#                         
+#             elif QpiDash[S] > Qpi:
+#                 
+#                 policy[S] = actions[id]
+#                 Qpi = QpiDash[S]
+#         
+#         if breakLoop:
+#             
+#             break
+#     
+#     return QpiDash, policy

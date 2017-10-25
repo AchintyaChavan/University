@@ -20,8 +20,8 @@ def main():
     problem.generate_stateSpace()
     
     S0 = tuple([key for key in problem.getInitialFunds().values()])
-    
-    MDP.mdp_value_iteration(problem, 0.4, S0)
+        
+    MDP.mdp_policy_iteration(problem, 4e-5, S0)
 
 #     print(problem.venture.__str__())
 
