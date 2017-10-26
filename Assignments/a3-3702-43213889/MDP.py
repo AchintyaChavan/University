@@ -137,10 +137,10 @@ def valid_actions(state, numVentures, M, E):
 
 """
  * Computes the mdp using value iteration
- * @param problem spec config, epsilon - convergence threshold, initial state - S0
+ * @param problem spec config, epsilon - convergence threshold
  * @returns the immediate reward at (s, a)
  """
-def mdp_value_iteration(problem, epsilon, S0):
+def mdp_value_iteration(problem, epsilon):
     
     V = {key: 0 for key in problem.stateSpace}
     optimalAction = {key: key for key in problem.stateSpace}
@@ -154,10 +154,10 @@ def mdp_value_iteration(problem, epsilon, S0):
     Vprev = 5 * epsilon
     counter = 0
     
-    while PS.np.abs(V[S0] - Vprev) > epsilon:
+    while PS.np.abs(sum(V.values()) - Vprev) > epsilon:
         
-        Vprev = V[S0]
-        
+        Vprev = sum(V.values())
+                
         for S in problem.getStateSpace():
             
             actions = valid_actions(S, N, M, E)
@@ -187,9 +187,10 @@ def mdp_value_iteration(problem, epsilon, S0):
 #         print(V)
 
     print(counter)
-    print(optimalAction[S0], V[S0])
+    print(optimalAction)
+    print(V)
     
-    return V[S0], optimalAction[S0]
+    return V, optimalAction
 
 '''
 # Value Iteration: Complexity O = (t * a * s^2)
@@ -238,7 +239,7 @@ def mdp_value_iteration(problem, epsilon, S0):
  * @param problem spec config, epsilon - convergence threshold, initial state - S0
  * @returns the immediate reward at (s, a)
  """
-def mdp_policy_iteration(problem, epsilon, S0):
+def mdp_policy_iteration(problem, epsilon):
     
     V = {key: 0 for key in problem.stateSpace}
     optimalAction = {}
@@ -258,13 +259,12 @@ def mdp_policy_iteration(problem, epsilon, S0):
         action = valid_actions(key, N, M, E)
         policy[key] = action[PS.np.random.randint(len(action))]
         
-    breakLoop = False
-    Vprev = 5 * epsilon
+    Vprev = 5 * epsilon #Arbitrarily large value to get inside loop
     counter = 0
     
-    while PS.np.abs(V[S0] - Vprev) > epsilon:
-
-        Vprev = V[S0]
+    while PS.np.abs(sum(V.values()) - Vprev) > epsilon:
+        
+        Vprev = sum(V.values())
         
         #Estimate Policy Value
         for S in problem.getStateSpace():
@@ -274,23 +274,21 @@ def mdp_policy_iteration(problem, epsilon, S0):
             
             for Sdash in problem.getStateSpace():
                     
-                expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
-                                                        problem.probabilities[i + 1]) for i in range(0, N)])
+                expected += V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                    problem.probabilities[i + 1]) for i in range(0, N)])
             
             immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
             
-            V[S] = expected + immediate
+            V[S] = immediate + Gamma * expected
 
         #Improve Policy
         for S in problem.getStateSpace():
                 
             actions = valid_actions(S, N, M, E)
             total = []
-            Qpi = V[S]
             
             for A in actions:
-                
-                immediate = 0
+
                 expected = 0
                 
                 for Sdash in problem.getStateSpace():
@@ -301,35 +299,34 @@ def mdp_policy_iteration(problem, epsilon, S0):
                 immediate += sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
                 
                 total.append(immediate + expected)
-             
-#             print(total)    
+
             id = PS.np.argmax(PS.np.array(total), axis = 0)
 
             Qpidash[S] = total[id]
-            V[S] = Qpidash[S]
+            
+            #If policy is not optimal then update it to optimal one and take it up
+            if Qpidash[S] > V[S]:
+                
+                policy[S] = actions[id]
+                V[S] = Qpidash[S]
             
             #Update Policy
-            if policy[S] == actions[id] and S == S0:
- 
-                print("Policy converged to optimal policy")
-                breakLoop = True
-                break
-                         
-            elif Qpidash[S] > Qpi:
-                 
-                policy[S] = actions[id]
-                Qpi = Qpidash[S]
-                
-        if breakLoop:
-             
-            break
+#             if policy[S] == actions[id]:
+#  
+#                 print(S)
+#                 pass
+#                          
+#             elif Qpidash[S] > Qpi:
+#                  
+#                 policy[S] = actions[id]
         
         counter = counter + 1
         
-    print(counter)     
-    
-    print(Qpidash[S0], policy[S0])            
-    return Qpidash[S0], policy[S0]
+#     print(counter)   
+#     print(policy) 
+#     print(Qpidash)  
+            
+    return Qpidash, policy
 # '''
 # Policy Iteration: Complexity O = (t * a * s^2)
 # '''

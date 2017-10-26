@@ -10,6 +10,7 @@ import MDP
 
 
 inputfile = "bronze1.txt"
+outfile = "output1.txt"
 
 def main():
 
@@ -21,7 +22,15 @@ def main():
     
     S0 = tuple([key for key in problem.getInitialFunds().values()])
         
-    MDP.mdp_policy_iteration(problem, 4e-5, S0)
+    cost, action = MDP.mdp_policy_iteration(problem, 4e-5)
+    
+#     f3 = open(os.path.join(os.getcwd(), outfile), "w")
+#   
+#     f3.write(str(action))
+#      
+#     cost, action = MDP.mdp_value_iteration(problem, 4e-5)
+#      
+#     f3.write(str(action))
 
 #     print(problem.venture.__str__())
 
