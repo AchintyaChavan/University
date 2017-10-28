@@ -110,28 +110,32 @@ class ProblemSpec:
         output = open(filename, "w")
         
         # Write number of fortnights
-        output.write(str(self.getNumFortnights()))
+        output.write(str(self.getNumFortnights()) + '\n')
         
         # Write intial funds allocation
         for item in self.getInitialFunds():
             
-            output.write(str(item) + " ")
+            output.write(str(item) + " " )
+        
+        output.write('\n')
+        
+        for fortnight in range(len(requestHistory)):
+#         for fortnight in range(self.getNumFortnights()):
             
-        for fortnight in range(self.getNumFortnights()):
-            
-            for item in requestHistory:
+            for item in requestHistory[fortnight]:
                 
                 output.write(str(item) + " ")
-                
-            for item in orderHistory:
+        
+            output.write('\n')
+               
+            for item in orderHistory[fortnight]:
                 
                 output.write(str(item) + " ")
-                
+          
+            output.write('\n')
+            
         output.close()
-            
         
-        
-                
     """
      * Enables using str() to return the space-separated string
      *  @return a space-separated string of fortnights and discount

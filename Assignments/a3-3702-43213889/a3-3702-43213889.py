@@ -6,7 +6,6 @@ Created on 18 Oct. 2017
 
 # import numpy as np
 import os
-import MDP
 import Simulator as Sim
 
 
@@ -15,34 +14,28 @@ outfile = "output1.txt"
 
 def main():
 
-    epsilon = 4e-5
+    epsilon = 4e-5   #Convergence Value
     filename = os.path.join(os.getcwd(), inputfile)
-
-    problem = MDP.PS.ProblemSpec()
+ 
+    #Initialise ProblemSpec Class
+    problem = Sim.PS.ProblemSpec()
     problem.loadInputFile(filename)
     problem.generate_stateSpace()
-    
-#     S0 = tuple([key for key in problem.getInitialFunds().values()])
-        
-#     cost, action = MDP.mdp_policy_iteration(problem, 4e-5)
-    
+
+    #Initialise Solver Class
     solver = Sim.MySolver.MySolver(problem, epsilon)
-    solver.doOfflineComputation('value')
+    solver.doOfflineComputation('value')  #Perform base value iteration
     
+    #Initialise Simulator Class with ProblemSpec and Solver classes
     simulator = Sim.Simulator()
     simulator.constructor(problem)
+    simulator.setVerbose(True)
     simulator.simulateStep(solver, 16)
+                
+#     S0 = tuple([key for key in problem.getInitialFunds().values()])
+        
+#     simulator.saveStep(os.path.join(os.getcwd(), outfile))
     
-#     f3 = open(os.path.join(os.getcwd(), outfile), "w")
-#   
-#     f3.write(str(action))
-#      
-#     cost, action = MDP.mdp_value_iteration(problem, 4e-5)
-#      
-#     f3.write(str(action))
-
-#     print(problem.venture.__str__())
-
     return 0
 
 if __name__ == "__main__":

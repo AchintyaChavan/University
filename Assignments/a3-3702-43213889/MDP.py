@@ -187,7 +187,7 @@ def mdp_value_iteration(problem, epsilon):
 #         print(counter, Vprev)
 #         print(V)
 
-#     print(counter)
+    print(counter)
 #     print(optimalAction)
 #     print(V)
     
@@ -281,7 +281,7 @@ def mdp_policy_iteration(problem, epsilon):
         
         counter = counter + 1
         
-#     print(counter)   
+    print(counter)   
 #     print(policy) 
 #     print(Qpidash)  
             

@@ -115,7 +115,7 @@ class Simulator:
         # Update discounted profit
         self.totalProfit += self.problem.getDiscountFactor() ** (self.currentFortnight - 1) * 1. * profit
   
-        if self.verbose != True:
+        if self.verbose == True:
 
             print("Fortnight " + str(self.currentFortnight))
             print("Start manufacturing funds: " + str(fortnightStartManufacturingFunds))
@@ -177,7 +177,7 @@ class Simulator:
     """
     def saveStep(self, filename):
         
-        PS.saveOutput(filename, self.customerOrderHistory, self.additionalFundsHistory)
+        self.problem.saveOutputFile(filename, self.customerOrderHistory, self.additionalFundsHistory)
         
     """
      * Set verbose to true for console output
