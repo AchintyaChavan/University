@@ -192,48 +192,6 @@ def mdp_value_iteration(problem, epsilon):
     
     return V, optimalAction
 
-'''
-# Value Iteration: Complexity O = (t * a * s^2)
-# '''
-# def mdp_value_interation(N, S0, Discount):
-#     
-#     V = {key: 0 for key in stateSpace}
-#     future  = {key: 0 for key in stateSpace}
-#     optimalAction = {key: key for key in stateSpace}
-#  
-#     for i in range(0, N):
-#         
-#         for S in stateSpace:
-#         
-#             (c, s) = S
-#             actions = valid_actions(S)
-#             total = []
-#                         
-#             for a in actions:
-#                 
-#                 (d, t) = a
-#                 expected = 0                
-#                 
-#                 for Sdash in stateSpace:
-#                                         
-#                     (sdash, cdash) = Sdash
-#                     
-#                     expected += Discount * 1. * T(c, s, d, t, cdash, sdash) * V[Sdash]
-#                 
-# #                 print(expected, S)   
-#                 total.append(R(c, s, d, t) + expected)
-# #                 future[S] = expected
-#                 
-#             id = np.argmax(np.array(total), axis = 0)
-#             optimalAction[S] = actions[id]
-#             V[S] = total[id]
-# 
-# #     print(V[S0], future[S0], V[S0]-future[S0])
-# #     print(optimalAction[S0])
-# 
-#     return V, optimalAction
-
-
 """
  * Computes the mdp using policy iteration
  * @param problem spec config, epsilon - convergence threshold, initial state - S0
