@@ -7,6 +7,7 @@ Created on 18 Oct. 2017
 # import numpy as np
 import os
 import MDP
+import Simulator as Sim
 
 
 inputfile = "bronze1.txt"
@@ -23,6 +24,10 @@ def main():
     S0 = tuple([key for key in problem.getInitialFunds().values()])
         
     cost, action = MDP.mdp_policy_iteration(problem, 4e-5)
+    
+    simulator = Sim.Simulator()
+    simulator.constructor(problem)
+    simulator.simulateStep(cost, 2)
     
 #     f3 = open(os.path.join(os.getcwd(), outfile), "w")
 #   

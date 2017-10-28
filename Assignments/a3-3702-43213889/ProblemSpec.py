@@ -124,7 +124,7 @@ class ProblemSpec:
     
     def getVentureManager(self):
         
-        return self.getVentureManager()
+        return self.venture
     
     def getSalePrices(self):
         
