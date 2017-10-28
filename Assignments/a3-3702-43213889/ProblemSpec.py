@@ -100,6 +100,39 @@ class ProblemSpec:
                 self.stateSpace.append(tuple(subset))
                 
     """
+     * Save output to file
+     * @param filename The file path to save to
+     * @param orderHistory List of all shopping orders starting at week 0
+     * @throws IOException
+    """
+    def saveOutputFile(self, filename, requestHistory, orderHistory):
+       
+        output = open(filename, "w")
+        
+        # Write number of fortnights
+        output.write(str(self.getNumFortnights()))
+        
+        # Write intial funds allocation
+        for item in self.getInitialFunds():
+            
+            output.write(str(item) + " ")
+            
+        for fortnight in range(self.getNumFortnights()):
+            
+            for item in requestHistory:
+                
+                output.write(str(item) + " ")
+                
+            for item in orderHistory:
+                
+                output.write(str(item) + " ")
+                
+        output.close()
+            
+        
+        
+                
+    """
      * Enables using str() to return the space-separated string
      *  @return a space-separated string of fortnights and discount
     """ 
