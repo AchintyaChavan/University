@@ -9,7 +9,10 @@ import ProblemSpec as PS
 
 """
  * Immediate Reward function R(s, a)
- * @param state s, action a, max value M, Probability matrix P
+ * @param s Current State
+ * @param a Action State
+ * @oaram M Maximum threshold for total funding 
+ * @param P Probability Matrix
  * @returns the immediate reward at (s, a)
  """
 def R(s, a, M, P):
@@ -44,7 +47,12 @@ def R(s, a, M, P):
 
 """
  * Transition function R(s, a, s')
- * @param state s, action a, max value M, Probability matrix P
+ * @param s Current State
+ * @param a Action State
+ * @param sdash Transition (next) state
+ * @param P Probability Matrix
+ * @oaram M Maximum threshold for total funding 
+ * @param P Probability Matrix
  * @returns the immediate reward at (s, a)
  """
 def T(s, a, sdash, M, P):
@@ -101,8 +109,11 @@ def T(s, a, sdash, M, P):
 
 """
  * Returns all actions that a state can legally transition from
- * @param state, number of ventures, maximum threshold M, excess funding E
- * @returns the immediate reward at (s, a)
+ * @param state Current State
+ * @param numVentures Number of ventures
+ * @oaram M Maximum threshold for total funding 
+ * @param E Maximum threshold for additional spending
+ * @returns a list of legal actions from state
  """
 def valid_actions(state, numVentures, M, E):
 
@@ -138,7 +149,8 @@ def valid_actions(state, numVentures, M, E):
 
 """
  * Computes the mdp using value iteration
- * @param problem spec config, epsilon - convergence threshold
+ * @param problem Problem Spec Config 
+ * @param epsilon Convergence value
  * @returns the immediate reward at (s, a)
  """
 def mdp_value_iteration(problem, epsilon):
@@ -193,100 +205,10 @@ def mdp_value_iteration(problem, epsilon):
     
     return V, optimalAction
 
-def MDP_RTDP_iteration(problem, S0, numFortnightsLeft):
-    
-    currentFortnight = 0
-    
-    V = {key: 0 for key in problem.stateSpace}
-    optimalAction = {}
-    
-    N = problem.venture.getNumVentures()
-    M = problem.venture.getManufacturingFunds()
-    E = problem.venture.getAdditionalFunds()
-    Gamma = problem.getDiscountFactor()
-    Prices = problem.getSalePrices()
-    
-    S = S0
-    
-    while currentFortnight < numFortnightsLeft:
-        
-        # Compute the best immediate action
-        actions = valid_actions(S, N, M, E)
-        total = []
-            
-        for A in actions:
-                
-            immediate = 0
-            expected = 0
-            
-            for Sdash in problem.getStateSpace():
-                
-                expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
-                                                             problem.probabilities[i + 1]) for i in range(0, N)])
-                
-            immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
-            
-            total.append(immediate + expected)        
-              
-        id = PS.np.argmax(PS.np.array(total), axis = 0) 
-        
-        #Update value of current state based on Agreedy
-        Agreedy = actions[id] #Argmax Q(S, A)
-        V[S] = total[id]      #max Q(S, A) = Q(S, Agreedy)
-        
-        #Obtain new state Sdash from sampling
-#         new 
-        
-        Sdash = sampleMatrix(S, problem.probabilities, N)
-                
-        S = Sdash
-        
-        currentFortnight += 1
-    
-    return V, optimalAction
-
-"""
- * Uses the currently loaded stochastic model to sample new state.
- * @param state The manufacturing funds allocation
- * @param P Probability Matrices
- * @param N Number of ventures
- * @return New state as list of integers
-"""
-def sampleMatrix(state, P, N):
-    
-    row = []
-    for k in range(N):
-
-        s = state[k]
-        prob = P[k + 1][s]
-        row.append(sampleIndex(prob))
-
-    return row
-
-"""
- * Returns an index sampled from a list of probabilities
- * @precondition probabilities in prob sum to 1
- * @param prob
- * @return an int with value within [0, row.size() - 1]
-"""
-def sampleIndex(row):
-        
-    sum = 0
-    r = PS.np.random.rand()  #Return random dist between 0 or 1
-    
-    for i in range(len(row)):
-        
-        sum += row[i]
-        
-        if (sum >= r):
-            
-            return i
-                    
-    return -1  #Need to check if this is valid for larger test cases
-
 """
  * Computes the mdp using policy iteration
- * @param problem spec config, epsilon - convergence threshold, initial state - S0
+ * @param problem Problem Spec Config 
+ * @param epsilon Convergence value
  * @returns the immediate reward at (s, a)
  """
 def mdp_policy_iteration(problem, epsilon):
@@ -377,3 +299,80 @@ def mdp_policy_iteration(problem, epsilon):
 #     print(Qpidash)  
             
     return Qpidash, policy
+
+"""
+ * Computes the greedy policy
+ * @param problem Problem Spec Config 
+ * @param valueTable Value Function lookup table
+ * @param S0 current state
+ * @returns the immediate reward at (s, a)
+ """
+def MDP_greedy_search(problem, valueTable, S0):
+
+    N = problem.venture.getNumVentures()
+    M = problem.venture.getManufacturingFunds()
+    E = problem.venture.getAdditionalFunds()
+    Gamma = problem.getDiscountFactor()
+    Prices = problem.getSalePrices()
+    
+    S = S0
+    
+    actions = valid_actions(S0, N, M, E)
+    total = []
+         
+    for A in actions:
+             
+        immediate = 0
+        expected = 0
+         
+        for Sdash in problem.getStateSpace():
+             
+            expected += Gamma * valueTable[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                         problem.probabilities[i + 1]) for i in range(0, N)])
+             
+        immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+         
+        total.append(immediate + expected)        
+           
+        id = PS.np.argmax(PS.np.array(total), axis = 0)
+
+    return total[id], actions[id]
+
+"""
+ * Uses the currently loaded stochastic model to sample new state.
+ * @param state The manufacturing funds allocation
+ * @param P Probability Matrices
+ * @param N Number of ventures
+ * @return New state as list of integers
+"""
+def sampleMatrix(state, P, N):
+    
+    row = []
+    for k in range(N):
+
+        s = state[k]
+        prob = P[k + 1][s]
+        row.append(sampleIndex(prob))
+
+    return row
+
+"""
+ * Returns an index sampled from a list of probabilities
+ * @precondition probabilities in prob sum to 1
+ * @param prob
+ * @return an int with value within [0, row.size() - 1]
+"""
+def sampleIndex(row):
+        
+    sum = 0
+    r = PS.np.random.rand()  #Return random dist between 0 or 1
+    
+    for i in range(len(row)):
+        
+        sum += row[i]
+        
+        if (sum >= r):
+            
+            return i
+                    
+    return -1  #Need to check if this is valid for larger test cases

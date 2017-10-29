@@ -11,10 +11,20 @@ class MySolver:
     def __init__(self, problem, epsilon):
         
         self.problem = problem
-        self.epsilon = epsilon       #Convergence threshold
-        self.valueTable = {}         #Dictionary of states whose values contain overall V(s)
-        self.policyTable = {}        #Dictionary of states whose values contain optimal action
-            
+        
+        #Allocated Convergence threshold
+        self.epsilon = epsilon
+        
+         #Dictionary of states whose values contain overall V(s)             
+        self.valueTable = {key: 0 for key in problem.stateSpace}
+        
+        #Dictionary of states whose values contain optimal actions/policies     
+        self.policyTable = {key: key for key in problem.stateSpace} 
+          
+    """
+     * Performs an exhaustive offline optimisation before simulations
+     * @param type Type of solver to use
+    """         
     def doOfflineComputation(self, type):
         
         if type == 'value':
@@ -27,10 +37,19 @@ class MySolver:
                
         self.valueTable = cost
         self.policyTable = action
-    
-    def doOnlineComputation(self, initialState, fortnightsLeft):
         
-        pass
+    """
+     * Performs an online RTDP method on a particular state
+     * @param S0 initial state
+    """       
+    def doOnlineComputation(self, S0):
+        
+        S0 = tuple(S0)
+        
+        cost, action = MDP.MDP_greedy_search(self.problem, self.valueTable, S0)
+        
+        self.valueTable[S0] = cost
+        self.policyTable[S0] = action
     
     """
      * Allocate additional funding to each venture

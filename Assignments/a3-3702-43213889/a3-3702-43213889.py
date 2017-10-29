@@ -59,7 +59,7 @@ def main():
     simulator.setVerbose(True)
     
      #Perform base value iteration
-    if RECREATE_SOLVER == False:
+    if RECREATE_SOLVER != True:
         
         print("Solver Initialised")
         solver.doOfflineComputation("value") 
@@ -67,13 +67,13 @@ def main():
     #Run simulator this many times
     for simNo in range(numSimulations):
         
-        print("Simulation Run ", simNo + 1)                
+        print("Simulation Run " + str(simNo + 1))                
         simulator.reset()
         
         if RECREATE_SOLVER == True:
             
             print("Solver Reinitialised")
-            solver = Sim.MySolver.MySolver(problem, epsilon)
+            solver = MySolver.MySolver(problem, epsilon)
             solver.doOfflineComputation("value")
                 
         print("-----------------------------------------------")
@@ -81,8 +81,9 @@ def main():
         #Perform simulations over the entire fortnight
         for i in range(solver.problem.getNumFortnights()):
                        
-            simulator.simulateStep(solver, solver.problem.getNumFortnights() - (i + 1))
-        
+            simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
+#             simulator.simulateOfflineStep(solver)
+            
         totalProfit += simulator.getTotalProfit()
         print("-----------------------------------------------")
         

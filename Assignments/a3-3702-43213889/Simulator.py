@@ -43,16 +43,109 @@ class Simulator:
         self.additionalFundsHistory = []    
         self.customerOrderHistory = []      
         self.totalProfit = 0
-            
+        
     """
-     * Simulate a fortnight. A runtime exception is thrown if the additional
+     * Simulate an online algorithm. A exception is thrown if the additional
      * funds allocation is invalid. If the additional funds allocation is valid,
      * the customer order demand is sampled and the current fortnight is
      * advanced.
      * @param solver
      * @param numFortnightsLeft
      """
-    def simulateStep(self, solver, numFortnightsLeft):
+    def simulateOnlineStep(self, solver, numFortnightsLeft):
+              
+        prices = self.problem.getSalePrices().values()
+        
+        # Record manufacturing funds at start of fortnight
+        fortnightStartManufacturingFunds = self.fundsAllocation[:]
+        self.fundsAllocationHistory.append(self.fundsAllocation)
+        
+        fortnight = 0
+        
+        while fortnight < numFortnightsLeft + 1:
+            
+            profit = 0
+            
+            # Generature customer orders
+            orders = self.sampleCustomerOrders(self.fundsAllocation)
+            
+            for i in range(len(orders)):
+            
+            # Compute profit from sales
+                sold = PS.np.min([orders[i], self.fundsAllocation[i]])
+                profit += (sold * prices[i] * 0.6)
+    
+                # Compute missed opportunity
+                missed = orders[i] - sold
+                profit -= (missed * prices[i] * 0.25)
+    
+                # Update manufacturing fund levels 
+                self.fundsAllocation[i] -= sold     
+           
+            # Record manufacturing fund levels after customer orders
+            afterOrderFunds = self.fundsAllocation[:]
+    
+            # Get addition funding amounts
+            solver.doOnlineComputation(afterOrderFunds)
+            additionalFunding = solver.generateAdditionalFundingAmounts(afterOrderFunds)
+        
+            if len(additionalFunding) != self.problem.venture.getNumVentures():
+                
+                raise Exception("Invalid additional funding list size")
+            
+            totalAdditional = 0
+            totalFunds = 0
+            
+            # Apply additional funds to manufacturing fund levels (new state s')
+            for i in range(len(additionalFunding)):
+                
+                totalAdditional += additionalFunding[i]
+                self.fundsAllocation[i] += additionalFunding[i]
+                totalFunds += self.fundsAllocation[i]
+                
+            if totalAdditional > self.problem.venture.getAdditionalFunds():
+            
+                raise Exception("Amount of additional funding is too large.")
+            
+            if totalFunds > self.problem.venture.getManufacturingFunds():
+                
+                raise Exception("Maximum manufacturing funds exceeded.")
+            
+            fortnight += 1
+            
+        # Add last generated order to history
+        self.customerOrderHistory.append(orders)
+        
+        # Add additional funding amount to history
+        self.additionalFundsHistory.append(additionalFunding)
+        
+        # Update discounted profit
+        self.totalProfit += self.problem.getDiscountFactor() ** (self.currentFortnight - 1) * 1. * profit
+        
+        if self.verbose == True:
+
+            print("Fortnight " + str(self.currentFortnight))
+            print("Start manufacturing funds: " + str(fortnightStartManufacturingFunds))
+            print("Customer order: " + str(orders))
+            print("Funds after customer order: " + str(afterOrderFunds))
+            print("Additional funding: " + str(additionalFunding))
+            print("Funds after funding: " + str(self.fundsAllocation))
+            print("Profit this fortnight: " + str(float(profit)))
+        
+        if (self.currentFortnight == self.problem.getNumFortnights()):
+            
+            print("Total discounted profit: " + str(self.totalProfit))
+                
+        self.currentFortnight += 1
+        
+    """
+     * Simulate a fortnight. A runtime exception is thrown if the additional
+     * funds allocation is invalid. If the additional funds allocation is valid,
+     * the customer order demand is sampled and the current fortnight is
+     * advanced.
+     * @param solver
+     """
+    def simulateOfflineStep(self, solver):
         
         profit = 0
         
@@ -145,30 +238,30 @@ class Simulator:
 
             s = state[k]
             prob = self.probabilities[k + 1][s]
-            wants.append(MDP.sampleIndex(prob))
+            wants.append(self.sampleIndex(prob))
 
         return wants
     
-#     """
-#      * Returns an index sampled from a list of probabilities
-#      * @precondition probabilities in prob sum to 1
-#      * @param prob
-#      * @return an int with value within [0, row.size() - 1]
-#     """
-#     def sampleIndex(self, row):
-#         
-#         sum = 0
-#         r = PS.np.random.rand()  #Return random dist between 0 or 1
-#         
-#         for i in range(len(row)):
-#             
-#             sum += row[i]
-#             
-#             if (sum >= r):
-#                 
-#                 return i
-#                     
-#         return -1  #Need to check if this is valid for larger test cases
+    """
+     * Returns an index sampled from a list of probabilities
+     * @precondition probabilities in prob sum to 1
+     * @param prob
+     * @return an int with value within [0, row.size() - 1]
+    """
+    def sampleIndex(self, row):
+         
+        sum = 0
+        r = PS.np.random.rand()  #Return random dist between 0 or 1
+         
+        for i in range(len(row)):
+             
+            sum += row[i]
+             
+            if (sum >= r):
+                 
+                return i
+                     
+        return -1  #Need to check if this is valid for larger test cases
     
     """
      * Saves the current history and total penalty to file
