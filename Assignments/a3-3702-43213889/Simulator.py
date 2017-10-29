@@ -4,7 +4,7 @@ Created on 28 Oct. 2017
 @author: AC
 '''
 
-import MySolver
+import MDP
 import ProblemSpec as PS
 
 class Simulator:
@@ -145,30 +145,30 @@ class Simulator:
 
             s = state[k]
             prob = self.probabilities[k + 1][s]
-            wants.append(self.sampleIndex(prob))
+            wants.append(MDP.sampleIndex(prob))
 
         return wants
     
-    """
-     * Returns an index sampled from a list of probabilities
-     * @precondition probabilities in prob sum to 1
-     * @param prob
-     * @return an int with value within [0, row.size() - 1]
-    """
-    def sampleIndex(self, row):
-        
-        sum = 0
-        r = PS.np.random.rand()  #Return random dist between 0 or 1
-        
-        for i in range(len(row)):
-            
-            sum += row[i]
-            
-            if (sum >= r):
-                
-                return i
-                    
-        return -1  #Need to check if this is valid for larger test cases
+#     """
+#      * Returns an index sampled from a list of probabilities
+#      * @precondition probabilities in prob sum to 1
+#      * @param prob
+#      * @return an int with value within [0, row.size() - 1]
+#     """
+#     def sampleIndex(self, row):
+#         
+#         sum = 0
+#         r = PS.np.random.rand()  #Return random dist between 0 or 1
+#         
+#         for i in range(len(row)):
+#             
+#             sum += row[i]
+#             
+#             if (sum >= r):
+#                 
+#                 return i
+#                     
+#         return -1  #Need to check if this is valid for larger test cases
     
     """
      * Saves the current history and total penalty to file

@@ -6,6 +6,7 @@ Created on 18 Oct. 2017
 
 import argparse
 import os
+import MySolver
 import Simulator as Sim
 
 inputfile = "bronze1.txt"
@@ -17,9 +18,14 @@ DEFAULT_NUM_SIMULATIONS = 1
 # Whether to re-create the solver for every simulation. 
 RECREATE_SOLVER = False;
 
+# Convergence threshold values
+DELTA_THRESHOLD = {'bronze': 5e-5,
+                   'silver': 5e-3,
+                   'gold': 5e-1,
+                   'platinum': 5e0}
+
 def main():
 
-    epsilon = 4e-5   #Convergence Value
     totalProfit = 0
     
     # The number of simulations to run. */
@@ -38,16 +44,19 @@ def main():
     problem.loadInputFile(filename)
     problem.generate_stateSpace()
 
+    #Designate convergence threshold value according to type    
+    epsilon = DELTA_THRESHOLD[problem.venture.getName()]
+    
     #Initialise Solver Class
-    solver = Sim.MySolver.MySolver(problem, epsilon)
+    solver = MySolver.MySolver(problem, epsilon)
         
     #Initialise Simulator Class with ProblemSpec and Solver classes
     simulator = Sim.Simulator()
     simulator.constructor(solver.problem)
     """
-    ####Change this to True for it to display fortnightly results - Default is False
+    ####Change this to True to display fortnightly results - Default is False
     """
-    simulator.setVerbose(False)
+    simulator.setVerbose(True)
     
      #Perform base value iteration
     if RECREATE_SOLVER == False:

@@ -154,7 +154,7 @@ def mdp_value_iteration(problem, epsilon):
     
     Vprev = 5 * epsilon
     counter = 0
-    
+        
     while PS.np.abs(sum(V.values()) - Vprev) > epsilon:
         
         Vprev = sum(V.values())
@@ -192,6 +192,97 @@ def mdp_value_iteration(problem, epsilon):
 #     print(V)
     
     return V, optimalAction
+
+def MDP_RTDP_iteration(problem, S0, numFortnightsLeft):
+    
+    currentFortnight = 0
+    
+    V = {key: 0 for key in problem.stateSpace}
+    optimalAction = {}
+    
+    N = problem.venture.getNumVentures()
+    M = problem.venture.getManufacturingFunds()
+    E = problem.venture.getAdditionalFunds()
+    Gamma = problem.getDiscountFactor()
+    Prices = problem.getSalePrices()
+    
+    S = S0
+    
+    while currentFortnight < numFortnightsLeft:
+        
+        # Compute the best immediate action
+        actions = valid_actions(S, N, M, E)
+        total = []
+            
+        for A in actions:
+                
+            immediate = 0
+            expected = 0
+            
+            for Sdash in problem.getStateSpace():
+                
+                expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+                                                             problem.probabilities[i + 1]) for i in range(0, N)])
+                
+            immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+            
+            total.append(immediate + expected)        
+              
+        id = PS.np.argmax(PS.np.array(total), axis = 0) 
+        
+        #Update value of current state based on Agreedy
+        Agreedy = actions[id] #Argmax Q(S, A)
+        V[S] = total[id]      #max Q(S, A) = Q(S, Agreedy)
+        
+        #Obtain new state Sdash from sampling
+#         new 
+        
+        Sdash = sampleMatrix(S, problem.probabilities, N)
+                
+        S = Sdash
+        
+        currentFortnight += 1
+    
+    return V, optimalAction
+
+"""
+ * Uses the currently loaded stochastic model to sample new state.
+ * @param state The manufacturing funds allocation
+ * @param P Probability Matrices
+ * @param N Number of ventures
+ * @return New state as list of integers
+"""
+def sampleMatrix(state, P, N):
+    
+    row = []
+    for k in range(N):
+
+        s = state[k]
+        prob = P[k + 1][s]
+        row.append(sampleIndex(prob))
+
+    return row
+
+"""
+ * Returns an index sampled from a list of probabilities
+ * @precondition probabilities in prob sum to 1
+ * @param prob
+ * @return an int with value within [0, row.size() - 1]
+"""
+def sampleIndex(row):
+        
+    sum = 0
+    r = PS.np.random.rand()  #Return random dist between 0 or 1
+    
+    for i in range(len(row)):
+        
+        sum += row[i]
+        
+        if (sum >= r):
+            
+            return i
+                    
+    return -1  #Need to check if this is valid for larger test cases
 
 """
  * Computes the mdp using policy iteration
@@ -281,7 +372,7 @@ def mdp_policy_iteration(problem, epsilon):
         
         counter = counter + 1
         
-#     print(counter)   
+    print(counter)   
 #     print(policy) 
 #     print(Qpidash)  
             
