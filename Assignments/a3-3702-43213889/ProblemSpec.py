@@ -113,7 +113,7 @@ class ProblemSpec:
         output.write(str(self.getNumFortnights()) + '\n')
         
         # Write intial funds allocation
-        for item in self.getInitialFunds():
+        for item in self.getInitialFunds().values():
             
             output.write(str(item) + " " )
         

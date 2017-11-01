@@ -8,8 +8,9 @@ import argparse
 import os
 import MySolver
 import Simulator as Sim
+import time
 
-inputfile = "bronze1.txt"
+inputfile = "platinum1.txt"
 outputfile = "output1.txt"
 
 # The default number of simulations to run. 
@@ -58,6 +59,8 @@ def main():
     """
     simulator.setVerbose(True)
     
+    t1 = time.time()
+    
      #Perform base value iteration
     if RECREATE_SOLVER != True:
         
@@ -81,17 +84,19 @@ def main():
         #Perform simulations over the entire fortnight
         for i in range(solver.problem.getNumFortnights()):
                        
-            simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
-#             simulator.simulateOfflineStep(solver)
+#             simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
+            simulator.simulateOfflineStep(solver)
             
         totalProfit += simulator.getTotalProfit()
         print("-----------------------------------------------")
         
+    t2 = time.time()
         
     simulator.saveStep(os.path.join(os.getcwd(), outputfile))
 #     print("-----------------------------------------------")
     print("Summary statistics from " + str(numSimulations) + " runs")
-    print("Overall profit: " + str(totalProfit))          
+    print("Overall profit: " + str(totalProfit))
+    print("Time taken (s): " + str(t2 - t1))          
     
     return 0
 
