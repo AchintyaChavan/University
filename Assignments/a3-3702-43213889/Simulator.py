@@ -55,6 +55,7 @@ class Simulator:
     def simulateOnlineStep(self, solver, numFortnightsLeft):
               
         prices = self.problem.getSalePrices().values()
+        after = [];
         
         # Record manufacturing funds at start of fortnight
         fortnightStartManufacturingFunds = self.fundsAllocation[:]
@@ -84,6 +85,7 @@ class Simulator:
            
             # Record manufacturing fund levels after customer orders
             afterOrderFunds = self.fundsAllocation[:]
+            after.append(afterOrderFunds)
     
             # Get addition funding amounts
             solver.doOnlineComputation(afterOrderFunds)
@@ -110,32 +112,43 @@ class Simulator:
             if totalFunds > self.problem.venture.getManufacturingFunds():
                 
                 raise Exception("Maximum manufacturing funds exceeded.")
-            
-            fortnight += 1
-            
-        # Add last generated order to history
-        self.customerOrderHistory.append(orders)
-        
-        # Add additional funding amount to history
-        self.additionalFundsHistory.append(additionalFunding)
-        
-        # Update discounted profit
-        self.totalProfit += self.problem.getDiscountFactor() ** (self.currentFortnight - 1) * 1. * profit
-        
-        if self.verbose == True:
 
-            print("Fortnight " + str(self.currentFortnight))
-            print("Start manufacturing funds: " + str(fortnightStartManufacturingFunds))
-            print("Customer order: " + str(orders))
-            print("Funds after customer order: " + str(afterOrderFunds))
-            print("Additional funding: " + str(additionalFunding))
-            print("Funds after funding: " + str(self.fundsAllocation))
-            print("Profit this fortnight: " + str(float(profit)))
-        
-        if (self.currentFortnight == self.problem.getNumFortnights()):
-            
-            print("Total discounted profit: " + str(self.totalProfit))
+            if fortnight == 0:
+                # Add last generated order to history
+                self.customerOrderHistory.append(orders)
                 
+                # Add additional funding amount to history
+                self.additionalFundsHistory.append(additionalFunding)
+                
+                # Update discounted profit
+                self.totalProfit += self.problem.getDiscountFactor() ** (self.currentFortnight - 1) * 1. * profit
+        
+                if self.verbose == True:
+
+                    print("Fortnight " + str(self.currentFortnight))
+                    print("Start manufacturing funds: " + str(fortnightStartManufacturingFunds))
+                    print("Customer order: " + str(orders))
+                    print("Funds after customer order: " + str(afterOrderFunds))
+                    print("Additional funding: " + str(additionalFunding))
+                    print("Funds after funding: " + str(self.fundsAllocation))
+                    print("Profit this fortnight: " + str(float(profit)))
+        
+            fortnight += 1
+        
+#         if self.verbose == True:
+# 
+#             print("Fortnight " + str(self.currentFortnight))
+#             print("Start manufacturing funds: " + str(fortnightStartManufacturingFunds))
+#             print("Customer order: " + str(self.customerOrderHistory[-1]))
+#             print("Funds after customer order: " + str(after[0]))
+#             print("Additional funding: " + str(self.additionalFundsHistory[-1]))
+#             print("Funds after funding: " + str(self.fundsAllocation))
+#             print("Profit this fortnight: " + str(float(profit)))
+#         
+#         if (self.currentFortnight == self.problem.getNumFortnights()):
+#             
+#             print("Total discounted profit: " + str(self.totalProfit))
+#                 
         self.currentFortnight += 1
         
     """

@@ -48,11 +48,11 @@ class MySolver:
         
         S0 = tuple(S0)
         
-        N = problem.venture.getNumVentures()
-        M = problem.venture.getManufacturingFunds()
-        E = problem.venture.getAdditionalFunds()
-        Gamma = problem.getDiscountFactor()
-        Prices = problem.getSalePrices()
+        N = self.problem.venture.getNumVentures()
+        M = self.problem.venture.getManufacturingFunds()
+        E = self.problem.venture.getAdditionalFunds()
+        Gamma = self.problem.getDiscountFactor()
+        Prices = self.problem.getSalePrices()
         
         cost, action = MDP.MDP_greedy_search(self.problem, self.valueTable, S0,
                                              N, M, E, Gamma, Prices)

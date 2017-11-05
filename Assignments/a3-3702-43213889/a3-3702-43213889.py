@@ -45,8 +45,9 @@ def main():
     problem.loadInputFile(filename)
     problem.generate_stateSpace()
 
-    #Designate convergence threshold value according to type    
-    epsilon = DELTA_THRESHOLD[problem.venture.getName()]
+    #Designate convergence threshold value according to type
+    venture = problem.venture.getName() 
+    epsilon = DELTA_THRESHOLD[venture]
     
     #Initialise Solver Class
     solver = MySolver.MySolver(problem, epsilon)
@@ -62,9 +63,11 @@ def main():
     t1 = time.time()
     
      #Perform base value iteration
-    if RECREATE_SOLVER != True:
+    if RECREATE_SOLVER == False \
+        and not (venture == 'gold' or venture == 'platinum'):
         
         print("Solver Initialised")
+        print("-----------------------------------------------")
         solver.doOfflineComputation("value")
 #         print(solver.policyTable) 
     
@@ -74,7 +77,8 @@ def main():
         print("Simulation Run " + str(simNo + 1))                
         simulator.reset()
         
-        if RECREATE_SOLVER == True:
+        if RECREATE_SOLVER == True \
+            and not (venture == 'gold' or venture == 'platinum'):
             
             print("Solver Reinitialised")
             solver = MySolver.MySolver(problem, epsilon)
@@ -84,9 +88,14 @@ def main():
         
         #Perform simulations over the entire fortnight
         for i in range(solver.problem.getNumFortnights()):
-                       
-#             simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
-            simulator.simulateOfflineStep(solver)
+            
+            if (venture == 'gold' or venture == 'platinum'):
+                           
+                simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
+                
+            else:
+              
+                simulator.simulateOfflineStep(solver)
             
         totalProfit += simulator.getTotalProfit()
         print("-----------------------------------------------")
