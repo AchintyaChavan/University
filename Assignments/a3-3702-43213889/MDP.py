@@ -153,10 +153,13 @@ def valid_actions(state, numVentures, M, E):
  * @param epsilon Convergence value
  * @returns the immediate reward at (s, a)
  """
-def mdp_value_iteration(problem, epsilon):
+def mdp_value_iteration(problem, valueTable, policyTable, epsilon):
     
-    V = {key: 0 for key in problem.stateSpace}
-    optimalAction = {key: key for key in problem.stateSpace}
+#     V = {key: 0 for key in problem.stateSpace}
+#     optimalAction = {key: key for key in problem.stateSpace}
+
+    V = valueTable
+    optimalAction = policyTable
     
     N = problem.venture.getNumVentures()
     M = problem.venture.getManufacturingFunds()
@@ -173,27 +176,29 @@ def mdp_value_iteration(problem, epsilon):
                 
         for S in problem.getStateSpace():
             
-            actions = valid_actions(S, N, M, E)
-            total = []
+            cost, action = MDP_greedy_search(problem, V, S, N, M, E, Gamma, Prices)
             
-            for A in actions:
-                
-                immediate = 0
-                expected = 0
-                
-                for Sdash in problem.getStateSpace():
-                    
-                    expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
-                                                                 problem.probabilities[i + 1]) for i in range(0, N)])
-                    
-                immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
-                
-                total.append(immediate + expected)
-             
-#             print(total)    
-            id = PS.np.argmax(PS.np.array(total), axis = 0)
-            optimalAction[S] = actions[id]
-            V[S] = total[id]
+#             actions = valid_actions(S, N, M, E)
+#             total = []
+#             
+#             for A in actions:
+#                 
+#                 immediate = 0
+#                 expected = 0
+#                 
+#                 for Sdash in problem.getStateSpace():
+#                     
+#                     expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+#                                                                  problem.probabilities[i + 1]) for i in range(0, N)])
+#                     
+#                 immediate = sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+#                 
+#                 total.append(immediate + expected)
+#              
+# #             print(total)    
+#             id = PS.np.argmax(PS.np.array(total), axis = 0)
+            optimalAction[S] = action
+            V[S] = cost
              
         counter = counter + 1
 #         print(counter, Vprev)
@@ -211,10 +216,9 @@ def mdp_value_iteration(problem, epsilon):
  * @param epsilon Convergence value
  * @returns the immediate reward at (s, a)
  """
-def mdp_policy_iteration(problem, epsilon):
+def mdp_policy_iteration(problem, valueTable, policyTable, epsilon):
     
-    V = {key: 0 for key in problem.stateSpace}
-    optimalAction = {}
+    V = valueTable
     Qpidash = {}
     
     N = problem.venture.getNumVentures()
@@ -223,7 +227,7 @@ def mdp_policy_iteration(problem, epsilon):
     Gamma = problem.getDiscountFactor()
     Prices = problem.getSalePrices()
   
-    policy = copy.deepcopy(V)
+    policy = policyTable
      
     # Generate a random policy but making sure it is a legal action
     for key in policy.keys():
@@ -256,30 +260,32 @@ def mdp_policy_iteration(problem, epsilon):
         #Improve Policy
         for S in problem.getStateSpace():
                 
-            actions = valid_actions(S, N, M, E)
-            total = []
-            
-            for A in actions:
+#             actions = valid_actions(S, N, M, E)
+#             total = []
+#             
+#             for A in actions:
+# 
+#                 expected = 0
+#                 
+#                 for Sdash in problem.getStateSpace():
+#                     
+#                     expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
+#                                                                  problem.probabilities[i + 1]) for i in range(0, N)])
+#                     
+#                 immediate += sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
+#                 
+#                 total.append(immediate + expected)
+# 
+#             id = PS.np.argmax(PS.np.array(total), axis = 0)
 
-                expected = 0
-                
-                for Sdash in problem.getStateSpace():
-                    
-                    expected += Gamma * V[Sdash] * PS.np.prod([T(S[i], A[i], Sdash[i], M, 
-                                                                 problem.probabilities[i + 1]) for i in range(0, N)])
-                    
-                immediate += sum([Prices[i + 1] * R(S[i], A[i], M, problem.probabilities[i + 1]) for i in range(0, N)])
-                
-                total.append(immediate + expected)
+            cost, action = MDP_greedy_search(problem, V, S, N, M, E, Gamma, Prices)
 
-            id = PS.np.argmax(PS.np.array(total), axis = 0)
-
-            Qpidash[S] = total[id]
+            Qpidash[S] = cost
             
             #If policy is not optimal then update it to optimal one and take it up
             if Qpidash[S] > V[S]:
                 
-                policy[S] = actions[id]
+                policy[S] = action
                 V[S] = Qpidash[S]
             
             #Update Policy
@@ -293,11 +299,7 @@ def mdp_policy_iteration(problem, epsilon):
 #                 policy[S] = actions[id]
         
         counter = counter + 1
-        
-    print(counter)   
-#     print(policy) 
-#     print(Qpidash)  
-            
+                    
     return Qpidash, policy
 
 """
@@ -307,13 +309,13 @@ def mdp_policy_iteration(problem, epsilon):
  * @param S0 current state
  * @returns the immediate reward at (s, a)
  """
-def MDP_greedy_search(problem, valueTable, S0):
+def MDP_greedy_search(problem, valueTable, S0, N, M, E, Gamma, Prices):
 
-    N = problem.venture.getNumVentures()
-    M = problem.venture.getManufacturingFunds()
-    E = problem.venture.getAdditionalFunds()
-    Gamma = problem.getDiscountFactor()
-    Prices = problem.getSalePrices()
+#     N = problem.venture.getNumVentures()
+#     M = problem.venture.getManufacturingFunds()
+#     E = problem.venture.getAdditionalFunds()
+#     Gamma = problem.getDiscountFactor()
+#     Prices = problem.getSalePrices()
     
     S = S0
     

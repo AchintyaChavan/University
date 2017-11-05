@@ -29,11 +29,13 @@ class MySolver:
         
         if type == 'value':
             
-            cost, action = MDP.mdp_value_iteration(self.problem, self.epsilon)
+            cost, action = MDP.mdp_value_iteration(self.problem, self.valueTable,
+                                                   self.policyTable, self.epsilon)
             
         elif type == 'policy':
             
-            cost, action = MDP.mdp_policy_iteration(self.problem, self.epsilon)
+            cost, action = MDP.mdp_policy_iteration(self.problem, self.valueTable,
+                                                    self.policyTable, self.epsilon)
                
         self.valueTable = cost
         self.policyTable = action
@@ -46,7 +48,14 @@ class MySolver:
         
         S0 = tuple(S0)
         
-        cost, action = MDP.MDP_greedy_search(self.problem, self.valueTable, S0)
+        N = problem.venture.getNumVentures()
+        M = problem.venture.getManufacturingFunds()
+        E = problem.venture.getAdditionalFunds()
+        Gamma = problem.getDiscountFactor()
+        Prices = problem.getSalePrices()
+        
+        cost, action = MDP.MDP_greedy_search(self.problem, self.valueTable, S0,
+                                             N, M, E, Gamma, Prices)
         
         self.valueTable[S0] = cost
         self.policyTable[S0] = action

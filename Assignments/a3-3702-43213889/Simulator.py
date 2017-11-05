@@ -71,7 +71,7 @@ class Simulator:
             
             for i in range(len(orders)):
             
-            # Compute profit from sales
+                # Compute profit from sales
                 sold = PS.np.min([orders[i], self.fundsAllocation[i]])
                 profit += (sold * prices[i] * 0.6)
     

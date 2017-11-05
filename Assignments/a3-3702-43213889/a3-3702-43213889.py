@@ -65,7 +65,8 @@ def main():
     if RECREATE_SOLVER != True:
         
         print("Solver Initialised")
-        solver.doOfflineComputation("value") 
+        solver.doOfflineComputation("value")
+#         print(solver.policyTable) 
     
     #Run simulator this many times
     for simNo in range(numSimulations):
@@ -91,7 +92,7 @@ def main():
         print("-----------------------------------------------")
         
     t2 = time.time()
-        
+
     simulator.saveStep(os.path.join(os.getcwd(), outputfile))
 #     print("-----------------------------------------------")
     print("Summary statistics from " + str(numSimulations) + " runs")
