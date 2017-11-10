@@ -10,7 +10,8 @@ import MySolver
 import Simulator as Sim
 import time
 
-inputfile = "platinum1.txt"
+# inputfile = "bronze1.txt"
+inputfile = "AI A1/platinum_eg1.txt"
 outputfile = "output1.txt"
 
 # The default number of simulations to run. 
@@ -23,7 +24,7 @@ RECREATE_SOLVER = False;
 DELTA_THRESHOLD = {'bronze': 5e-5,
                    'silver': 5e-3,
                    'gold': 5e-1,
-                   'platinum': 5e0}
+                   'platinum': 5e-1}
 
 def main():
 
@@ -32,12 +33,11 @@ def main():
     # The number of simulations to run. */
     numSimulations = DEFAULT_NUM_SIMULATIONS; 
     
-#     parser = argparse.ArgumentParser()
-#     parser.add_argument("inputFile", help = "list of roads and info")
-#     parser.add_argument("outputFile", help = "initial and final locations")
-#     args = parser.parse_args()
-        
-            
+    parser = argparse.ArgumentParser()
+    parser.add_argument("inputFile", help = "list of roads and info")
+    parser.add_argument("outputFile", help = "initial and final locations")
+    args = parser.parse_args()
+                    
     filename = os.path.join(os.getcwd(), inputfile)
  
     #Initialise ProblemSpec Class
@@ -62,15 +62,20 @@ def main():
     
     t1 = time.time()
     
+    count = 0
+    
      #Perform base value iteration
     if RECREATE_SOLVER == False \
-        and not (venture == 'gold' or venture == 'platinum'):
+        and not (venture == 'diamond'):
         
         print("Solver Initialised")
         print("-----------------------------------------------")
-        solver.doOfflineComputation("value")
+        solver.doOfflineComputation("policy")
 #         print(solver.policyTable) 
-    
+#         print(solver.valueTable)
+
+    t2 = time.time()
+      
     #Run simulator this many times
     for simNo in range(numSimulations):
         
@@ -89,24 +94,31 @@ def main():
         #Perform simulations over the entire fortnight
         for i in range(solver.problem.getNumFortnights()):
             
-            if (venture == 'gold' or venture == 'platinum'):
+            if (venture == 'diamond'):
                            
                 simulator.simulateOnlineStep(solver, solver.problem.getNumFortnights() - (i + 1))
                 
             else:
               
                 simulator.simulateOfflineStep(solver)
-            
+        
+#         if simulator.getTotalProfit() >= 25:
+#                
+#             print(simulator.getTotalProfit())
+#             count += 1
+        
         totalProfit += simulator.getTotalProfit()
         print("-----------------------------------------------")
         
-    t2 = time.time()
+
 
     simulator.saveStep(os.path.join(os.getcwd(), outputfile))
 #     print("-----------------------------------------------")
     print("Summary statistics from " + str(numSimulations) + " runs")
     print("Overall profit: " + str(totalProfit))
     print("Time taken (s): " + str(t2 - t1))          
+        
+#     print(count)
     
     return 0
 

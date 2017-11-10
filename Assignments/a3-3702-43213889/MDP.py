@@ -319,7 +319,7 @@ def MDP_greedy_search(problem, valueTable, S0, N, M, E, Gamma, Prices):
     
     S = S0
     
-    actions = valid_actions(S0, N, M, E)
+    actions = valid_actions(S, N, M, E)
     total = []
          
     for A in actions:
