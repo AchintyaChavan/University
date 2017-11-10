@@ -11,8 +11,8 @@ import Simulator as Sim
 import time
 
 # inputfile = "bronze1.txt"
-inputfile = "AI A1/platinum_eg1.txt"
-outputfile = "output1.txt"
+# inputfile = "AI A1/platinum_eg1.txt"
+# outputfile = "output1.txt"
 
 # The default number of simulations to run. 
 DEFAULT_NUM_SIMULATIONS = 1
@@ -39,6 +39,7 @@ def main():
     args = parser.parse_args()
                     
     filename = os.path.join(os.getcwd(), inputfile)
+    print("Reading from " + str(filename))
  
     #Initialise ProblemSpec Class
     problem = Sim.PS.ProblemSpec()
