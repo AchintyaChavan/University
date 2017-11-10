@@ -10,8 +10,8 @@ import MySolver
 import Simulator as Sim
 import time
 
-# inputfile = "bronze1.txt"
-# inputfile = "AI A1/platinum_eg1.txt"
+# inputFile = "bronze1.txt"
+# inputFile = "AI A1/platinum_eg1.txt"
 # outputfile = "output1.txt"
 
 # The default number of simulations to run. 
@@ -38,7 +38,7 @@ def main():
     parser.add_argument("outputFile", help = "initial and final locations")
     args = parser.parse_args()
                     
-    filename = os.path.join(os.getcwd(), inputfile)
+    filename = os.path.join(os.getcwd(), args.inputFile)
     print("Reading from " + str(filename))
  
     #Initialise ProblemSpec Class
@@ -113,7 +113,7 @@ def main():
         
 
 
-    simulator.saveStep(os.path.join(os.getcwd(), outputfile))
+    simulator.saveStep(os.path.join(os.getcwd(), args.outputFile))
 #     print("-----------------------------------------------")
     print("Summary statistics from " + str(numSimulations) + " runs")
     print("Overall profit: " + str(totalProfit))
